@@ -22,24 +22,21 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      audioSrc: '/static/audio/test.mp3' // 设置默认音频地址
-    }
-  },
-  methods: {
-    onPlay() {
-      console.log('音频开始播放')
-    },
-    onPause() {
-      console.log('音频暂停')
-    },
-    onEnded() {
-      console.log('音频播放结束')
-    }
-  }
+<script setup>
+import { ref } from 'vue'
+
+const audioSrc = ref('/static/audio/test.mp3')
+
+const onPlay = () => {
+  console.log('音频开始播放')
+}
+
+const onPause = () => {
+  console.log('音频暂停')
+}
+
+const onEnded = () => {
+  console.log('音频播放结束')
 }
 </script>
 

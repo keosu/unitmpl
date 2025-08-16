@@ -20,24 +20,21 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      videoSrc: '/static/video/test.mp4' // 设置默认视频地址
-    }
-  },
-  methods: {
-    onPlay() {
-      console.log('视频开始播放')
-    },
-    onPause() {
-      console.log('视频暂停')
-    },
-    onEnded() {
-      console.log('视频播放结束')
-    }
-  }
+<script setup>
+import { ref } from 'vue'
+
+const videoSrc = ref('/static/video/test.mp4')
+
+const onPlay = () => {
+  console.log('视频开始播放')
+}
+
+const onPause = () => {
+  console.log('视频暂停')
+}
+
+const onEnded = () => {
+  console.log('视频播放结束')
 }
 </script>
 
