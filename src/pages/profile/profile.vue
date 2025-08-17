@@ -28,6 +28,33 @@
       <view class="section-header">
         <text class="section-title">登录/注册</text>
       </view>
+      
+      <!-- 微信登录 -->
+      <view class="login-methods">
+        <button 
+          v-if="isWeixin" 
+          class="btn wechat-login-btn" 
+          open-type="getUserInfo" 
+          @getuserinfo="handleWechatLogin"
+        >
+          <text class="wechat-login-text">微信一键登录</text>
+        </button>
+        
+        <!-- 手机号一键登录 -->
+        <button 
+          v-if="isWeixin" 
+          class="btn phone-login-btn" 
+          open-type="getPhoneNumber" 
+          @getphonenumber="handlePhoneNumberLogin"
+        >
+          <text class="phone-login-text">手机号一键登录</text>
+        </button>
+      </view>
+      
+      <view class="divider">
+        <text class="divider-text">或</text>
+      </view>
+      
       <view class="form-group">
         <input 
           class="input" 
@@ -82,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 // 用户信息
 const userInfo = ref({
@@ -100,109 +127,22 @@ const loginForm = ref({
 // 登录状态
 const isLogin = ref(false)
 
+// 是否为微信环境
+const isWeixin = ref(false)
+
 // 主题模式
 const themeMode = ref('light')
 
 // 主题变化监听函数
 let themeChangeListener
 
-// 切换主题
-const toggleTheme = (e) => {
-  const isDark = e.detail.value
-  themeMode.value = isDark ? 'dark' : 'light'
-  
-  // 保存主题设置到本地存储
-  uni.setStorageSync('themeMode', themeMode.value)
-  
-  // 应用主题
-  applyTheme()
-}
-
-// 应用主题
-const applyTheme = () => {
-  // 使用UniApp官方API设置导航栏颜色
-  if (themeMode.value === 'dark') {
-    uni.setNavigationBarColor({
-      frontColor: '#ffffff',
-      backgroundColor: '#1a1a1a'
-    })
-  } else {
-    uni.setNavigationBarColor({
-      frontColor: '#000000',
-      backgroundColor: '#F8F8F8'
-    })
-  }
-}
-
-// 处理登录
-const handleLogin = () => {
-  if (!loginForm.value.username || !loginForm.value.password) {
-    uni.showToast({
-      title: '请输入用户名和密码',
-      icon: 'none'
-    })
-    return
-  }
-  
-  // 模拟登录逻辑
-  userInfo.value = {
-    username: loginForm.value.username,
-    email: `${loginForm.value.username}@example.com`,
-    registerDate: '2025-01-01'
-  }
-  isLogin.value = true
-  
-  uni.showToast({
-    title: '登录成功',
-    icon: 'success'
-  })
-}
-
-// 处理注册
-const handleRegister = () => {
-  if (!loginForm.value.username || !loginForm.value.password) {
-    uni.showToast({
-      title: '请输入用户名和密码',
-      icon: 'none'
-    })
-    return
-  }
-  
-  // 模拟注册逻辑
-  userInfo.value = {
-    username: loginForm.value.username,
-    email: `${loginForm.value.username}@example.com`,
-    registerDate: new Date().toLocaleDateString()
-  }
-  isLogin.value = true
-  
-  uni.showToast({
-    title: '注册成功',
-    icon: 'success'
-  })
-}
-
-// 处理退出登录
-const handleLogout = () => {
-  userInfo.value = {
-    username: '',
-    email: '',
-    registerDate: ''
-  }
-  loginForm.value = {
-    username: '',
-    password: ''
-  }
-  isLogin.value = false
-  
-  uni.showToast({
-    title: '已退出登录',
-    icon: 'success'
-  })
-}
-
 // 页面加载时初始化
 onMounted(() => {
+  // 检查是否在微信环境
+  // #ifdef MP-WEIXIN
+  isWeixin.value = true
+  // #endif
+  
   // 从本地存储获取主题设置
   const savedTheme = uni.getStorageSync('themeMode')
   if (savedTheme) {
@@ -233,7 +173,238 @@ onMounted(() => {
   }
   
   uni.onThemeChange(themeChangeListener)
+  
+  // 检查登录状态
+  checkLoginStatus()
 })
+
+// 页面卸载时取消监听
+onUnmounted(() => {
+  if (themeChangeListener) {
+    uni.offThemeChange(themeChangeListener)
+  }
+})
+
+// 检查登录状态
+const checkLoginStatus = () => {
+  const token = uni.getStorageSync('token')
+  if (token) {
+    // 模拟获取用户信息
+    userInfo.value = {
+      username: '已登录用户',
+      email: 'user@example.com',
+      registerDate: '2025-01-01'
+    }
+    isLogin.value = true
+  }
+}
+
+// 切换主题
+const toggleTheme = (e) => {
+  const isDark = e.detail.value
+  themeMode.value = isDark ? 'dark' : 'light'
+  
+  // 保存主题设置到本地存储
+  uni.setStorageSync('themeMode', themeMode.value)
+  
+  // 应用主题
+  applyTheme()
+}
+
+// 应用主题
+const applyTheme = () => {
+  // 使用UniApp官方API设置导航栏颜色
+  if (themeMode.value === 'dark') {
+    uni.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: '#1a1a1a'
+    })
+  } else {
+    uni.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: '#F8F8F8'
+    })
+  }
+}
+
+// 处理微信登录
+const handleWechatLogin = (e) => {
+  if (e.detail.errMsg === 'getUserInfo:ok') {
+    uni.showLoading({
+      title: '登录中...'
+    })
+    
+    // 微信登录流程
+    uni.login({
+      provider: 'weixin',
+      success: (loginRes) => {
+        // 这里应该将登录凭证发送到后端进行验证
+        // loginRes.code 是登录凭证
+        console.log('微信登录成功，code:', loginRes.code)
+        
+        // 模拟登录成功
+        setTimeout(() => {
+          uni.hideLoading()
+          userInfo.value = {
+            username: '微信用户',
+            email: 'wechat@example.com',
+            registerDate: new Date().toLocaleDateString()
+          }
+          isLogin.value = true
+          
+          // 保存登录状态
+          uni.setStorageSync('token', 'wechat_login_token')
+          
+          uni.showToast({
+            title: '微信登录成功',
+            icon: 'success'
+          })
+        }, 1000)
+      },
+      fail: (err) => {
+        uni.hideLoading()
+        uni.showToast({
+          title: '微信登录失败',
+          icon: 'none'
+        })
+        console.error('微信登录失败:', err)
+      }
+    })
+  } else {
+    uni.showToast({
+      title: '微信登录取消',
+      icon: 'none'
+    })
+  }
+}
+
+// 处理手机号登录
+const handlePhoneNumberLogin = (e) => {
+  if (e.detail.errMsg === 'getPhoneNumber:ok') {
+    uni.showLoading({
+      title: '登录中...'
+    })
+    
+    // 获取手机号码流程
+    // 在新版微信小程序中，需要先调用 uni.login 获取 code
+    uni.login({
+      provider: 'weixin',
+      success: (loginRes) => {
+        // 将 code 和 encryptedData 发送到后端进行解密
+        console.log('获取到code:', loginRes.code)
+        console.log('获取到手机号加密数据:', e.detail)
+        
+        // 模拟发送到后端解密手机号
+        setTimeout(() => {
+          uni.hideLoading()
+          userInfo.value = {
+            username: '手机用户',
+            email: 'phone@example.com',
+            registerDate: new Date().toLocaleDateString()
+          }
+          isLogin.value = true
+          
+          // 保存登录状态
+          uni.setStorageSync('token', 'phone_login_token')
+          
+          uni.showToast({
+            title: '手机号登录成功',
+            icon: 'success'
+          })
+        }, 1000)
+      },
+      fail: (err) => {
+        uni.hideLoading()
+        uni.showToast({
+          title: '手机号获取失败',
+          icon: 'none'
+        })
+        console.error('获取手机号失败:', err)
+      }
+    })
+  } else {
+    uni.showToast({
+      title: '手机号获取失败',
+      icon: 'none'
+    })
+  }
+}
+
+// 处理登录
+const handleLogin = () => {
+  if (!loginForm.value.username || !loginForm.value.password) {
+    uni.showToast({
+      title: '请输入用户名和密码',
+      icon: 'none'
+    })
+    return
+  }
+  
+  // 模拟登录逻辑
+  userInfo.value = {
+    username: loginForm.value.username,
+    email: `${loginForm.value.username}@example.com`,
+    registerDate: '2025-01-01'
+  }
+  isLogin.value = true
+  
+  // 保存登录状态
+  uni.setStorageSync('token', 'normal_login_token')
+  
+  uni.showToast({
+    title: '登录成功',
+    icon: 'success'
+  })
+}
+
+// 处理注册
+const handleRegister = () => {
+  if (!loginForm.value.username || !loginForm.value.password) {
+    uni.showToast({
+      title: '请输入用户名和密码',
+      icon: 'none'
+    })
+    return
+  }
+  
+  // 模拟注册逻辑
+  userInfo.value = {
+    username: loginForm.value.username,
+    email: `${loginForm.value.username}@example.com`,
+    registerDate: new Date().toLocaleDateString()
+  }
+  isLogin.value = true
+  
+  // 保存登录状态
+  uni.setStorageSync('token', 'register_token')
+  
+  uni.showToast({
+    title: '注册成功',
+    icon: 'success'
+  })
+}
+
+// 处理退出登录
+const handleLogout = () => {
+  userInfo.value = {
+    username: '',
+    email: '',
+    registerDate: ''
+  }
+  loginForm.value = {
+    username: '',
+    password: ''
+  }
+  isLogin.value = false
+  
+  // 清除登录状态
+  uni.removeStorageSync('token')
+  
+  uni.showToast({
+    title: '已退出登录',
+    icon: 'success'
+  })
+}
 </script>
 
 <style scoped>
@@ -368,6 +539,58 @@ onMounted(() => {
   font-weight: bold;
 }
 
+/* 微信登录按钮样式 */
+.wechat-login-btn {
+  background-color: #07c160;
+  color: white;
+  margin-bottom: 20rpx;
+}
+
+.wechat-login-text {
+  font-size: 32rpx;
+}
+
+/* 手机号登录按钮样式 */
+.phone-login-btn {
+  background-color: #007AFF;
+  color: white;
+  margin-bottom: 20rpx;
+}
+
+.phone-login-text {
+  font-size: 32rpx;
+}
+
+/* 分割线 */
+.divider {
+  text-align: center;
+  position: relative;
+  margin: 30rpx 0;
+}
+
+.divider-text {
+  background-color: #fff;
+  padding: 0 20rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1rpx;
+  background-color: #eee;
+  z-index: 1;
+}
+
+.divider-text {
+  position: relative;
+  z-index: 2;
+}
+
 /* 暗黑主题样式 - 使用媒体查询方式 */
 @media (prefers-color-scheme: dark) {
   .profile-container {
@@ -402,6 +625,15 @@ onMounted(() => {
     background-color: #3a3a3a;
     color: #fff;
     border-color: #444;
+  }
+  
+  .divider-text {
+    background-color: #2d2d2d;
+    color: #aaa;
+  }
+  
+  .divider::before {
+    background-color: #444;
   }
 }
 </style>
