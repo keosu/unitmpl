@@ -17,6 +17,12 @@
 			"style": {
 				"navigationBarTitleText": "音频播放"
 			}
+		},
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
 		}
 	],
 	"globalStyle": {
@@ -42,6 +48,10 @@
 			{
 				"pagePath": "pages/audio/audio",
 				"text": "音频"
+			},
+			{
+				"pagePath": "pages/profile/profile",
+				"text": "我的"
 			}
 		]
 	}
