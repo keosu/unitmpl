@@ -103,6 +103,9 @@ const isLogin = ref(false)
 // 主题模式
 const themeMode = ref('light')
 
+// 主题变化监听函数
+let themeChangeListener
+
 // 切换主题
 const toggleTheme = (e) => {
   const isDark = e.detail.value
@@ -117,10 +120,7 @@ const toggleTheme = (e) => {
 
 // 应用主题
 const applyTheme = () => {
-  // 这里可以添加实际的主题应用逻辑
-  console.log('切换到主题:', themeMode.value)
-  
-  // 可以通过修改根元素的类名来应用主题
+  // 使用UniApp官方API设置导航栏颜色
   if (themeMode.value === 'dark') {
     uni.setNavigationBarColor({
       frontColor: '#ffffff',
@@ -129,7 +129,7 @@ const applyTheme = () => {
   } else {
     uni.setNavigationBarColor({
       frontColor: '#000000',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#F8F8F8'
     })
   }
 }
@@ -207,10 +207,32 @@ onMounted(() => {
   const savedTheme = uni.getStorageSync('themeMode')
   if (savedTheme) {
     themeMode.value = savedTheme
+  } else {
+    // 如果没有保存的主题设置，则获取系统主题
+    try {
+      const systemInfo = uni.getSystemInfoSync()
+      if (systemInfo.theme) {
+        themeMode.value = systemInfo.theme
+      }
+    } catch (e) {
+      console.error('获取系统主题信息失败:', e)
+    }
   }
   
   // 应用主题
   applyTheme()
+  
+  // 监听主题变化
+  themeChangeListener = (res) => {
+    // 如果用户没有手动设置主题，则跟随系统主题变化
+    const savedTheme = uni.getStorageSync('themeMode')
+    if (!savedTheme) {
+      themeMode.value = res.theme
+      applyTheme()
+    }
+  }
+  
+  uni.onThemeChange(themeChangeListener)
 })
 </script>
 
@@ -346,38 +368,40 @@ onMounted(() => {
   font-weight: bold;
 }
 
-/* 暗黑主题样式 */
-.dark .profile-container {
-  background-color: #1a1a1a;
-  color: #fff;
-}
+/* 暗黑主题样式 - 使用媒体查询方式 */
+@media (prefers-color-scheme: dark) {
+  .profile-container {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
 
-.dark .section {
-  background-color: #2d2d2d;
-  color: #fff;
-}
+  .section {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
 
-.dark .section-title {
-  color: #fff;
-}
+  .section-title {
+    color: #fff;
+  }
 
-.dark .label {
-  color: #aaa;
-}
+  .label {
+    color: #aaa;
+  }
 
-.dark .value {
-  color: #fff;
-}
+  .value {
+    color: #fff;
+  }
 
-.dark .input {
-  background-color: #3a3a3a;
-  color: #fff;
-  border-color: #444;
-}
+  .input {
+    background-color: #3a3a3a;
+    color: #fff;
+    border-color: #444;
+  }
 
-.dark .secondary {
-  background-color: #3a3a3a;
-  color: #fff;
-  border-color: #444;
+  .secondary {
+    background-color: #3a3a3a;
+    color: #fff;
+    border-color: #444;
+  }
 }
 </style>

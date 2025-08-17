@@ -26,16 +26,16 @@
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "@navTxtStyle",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarBackgroundColor": "@navBgColor",
+		"backgroundColor": "@bgColor"
 	},
 	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
-		"borderStyle": "black",
-		"backgroundColor": "#F8F8F8",
+		"color": "@tabFontColor",
+		"selectedColor": "@tabSelectedColor",
+		"borderStyle": "@tabBorderStyle",
+		"backgroundColor": "@tabBgColor",
 		"list": [
 			{
 				"pagePath": "pages/index/index",
