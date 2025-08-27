@@ -7,30 +7,77 @@
 			"^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^sc-(.*)": "@/uni_modules/sc-tabbar/components/sc-tabbar-$1/sc-tabbar-$1.vue"
 		}
-
 	},
-	"pages": [{
-		"path": "pages/index/index",
-		"style": {
-			"navigationBarTitleText": ""
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
 		}
-	}],
+	],
 	"subPackages": [
 		{
-		"root": "home-subcontract",
-		"pages": [
-			{
-			"path": "index",
-			"style": {
-				"navigationBarTitleText": "",
-
-				"backgroundColor": "#F3F4F6"
-			}
-		}]
-	}
-	
+			"root": "home-subcontract",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "首页",
+						"backgroundColor": "#F3F4F6"
+					}
+				}
+			]
+		},
+		{
+			"root": "my-subcontract",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "首页",
+						"backgroundColor": "#F3F4F6"
+					}
+				}
+			]
+		},
+		{
+			"root": "order-subcontract",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "首页",
+						"backgroundColor": "#F3F4F6"
+					}
+				}
+			]
+		},
+		{
+			"root": "product-subcontract",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "首页",
+						"backgroundColor": "#F3F4F6"
+					}
+				}
+			]
+		},
+		{
+			"root": "service-subcontract",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "首页",
+						"backgroundColor": "#F3F4F6"
+					}
+				}
+			]
+		}
 	],
-
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
