@@ -16,68 +16,6 @@
 			}
 		}
 	],
-	"subPackages": [
-		{
-			"root": "home-subcontract",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "首页",
-						"backgroundColor": "#F3F4F6"
-					}
-				}
-			]
-		},
-		{
-			"root": "my-subcontract",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "首页",
-						"backgroundColor": "#F3F4F6"
-					}
-				}
-			]
-		},
-		{
-			"root": "order-subcontract",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "首页",
-						"backgroundColor": "#F3F4F6"
-					}
-				}
-			]
-		},
-		{
-			"root": "product-subcontract",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "首页",
-						"backgroundColor": "#F3F4F6"
-					}
-				}
-			]
-		},
-		{
-			"root": "service-subcontract",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "首页",
-						"backgroundColor": "#F3F4F6"
-					}
-				}
-			]
-		}
-	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

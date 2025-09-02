@@ -48,13 +48,15 @@
 				<view class="bar-icon">
 					<image class="" src="https://picsum.photos/55/55?random=1"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 0 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.home') }}</view>
+				<view class="" :class="[currentTabbarIndex === 0 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.home')
+				}}</view>
 			</view>
 			<view class="action" @tap.stop="changeTabbar(1)">
 				<view class="bar-icon">
 					<image class="" src="https://picsum.photos/55/55?random=2"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 1 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.category') }}</view>
+				<view class="" :class="[currentTabbarIndex === 1 ? 'icon-select' : 'tn-color-gray']">{{
+					t('tabbar.category') }}</view>
 			</view>
 
 			<view class="action bar-center" @tap.stop="changeTabbar(2)">
@@ -77,20 +79,23 @@
 						</view>
 					</view>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 2 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.publish') }}</view>
+				<view class="" :class="[currentTabbarIndex === 2 ? 'icon-select' : 'tn-color-gray']">{{
+					t('tabbar.publish') }}</view>
 			</view>
 
 			<view class="action" @tap.stop="changeTabbar(3)">
 				<view class="bar-icon">
 					<image class="" src="https://picsum.photos/55/55?random=4"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 3 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.statistics') }}</view>
+				<view class="" :class="[currentTabbarIndex === 3 ? 'icon-select' : 'tn-color-gray']">{{
+					t('tabbar.statistics') }}</view>
 			</view>
 			<view class="action" @tap.stop="changeTabbar(4)">
 				<view class="bar-icon">
 					<image class="" src="https://picsum.photos/55/55?random=5"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 4 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.my') }}</view>
+				<view class="" :class="[currentTabbarIndex === 4 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.my')
+				}}</view>
 			</view>
 		</view>
 	</view>

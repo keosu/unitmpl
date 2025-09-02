@@ -76,13 +76,6 @@
   - 用户组件 (`components/my/`) - 个人中心、语言设置、功能菜单
   - 主页面 (`index.vue`) - 底部导航栏、页面切换管理
 
-- **分包模块**
-  - 首页分包 (`home-subcontract/`)
-  - 产品分包 (`product-subcontract/`)
-  - 服务分包 (`service-subcontract/`)
-  - 订单分包 (`order-subcontract/`)
-  - 用户分包 (`my-subcontract/`)
-
 - **工具模块** (`utils/`)
   - 网络请求封装 (`request/`)
   - 本地存储管理 (`localStorage.js`) - 支持语言偏好持久化
@@ -173,4 +166,4 @@ Closes #123
 
 ---
 
-*最后更新：2024-12-19*   
+*最后更新：2024-12-19*
