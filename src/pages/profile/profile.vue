@@ -5,111 +5,192 @@
     </view>
 
     <!-- 基本信息 -->
-    <view class="section">
-      <view class="section-header">
-        <text class="section-title">基本信息</text>
-      </view>
-      <view class="info-item">
-        <text class="label">用户名:</text>
-        <text class="value">{{ userInfo.username || '未设置' }}</text>
-      </view>
-      <view class="info-item">
-        <text class="label">邮箱:</text>
-        <text class="value">{{ userInfo.email || '未设置' }}</text>
-      </view>
-      <view class="info-item">
-        <text class="label">注册时间:</text>
-        <text class="value">{{ userInfo.registerDate || '未知' }}</text>
-      </view>
-    </view>
+    <uv-cell-group title="基本信息" :border="true">
+      <uv-cell title="用户名" :value="userInfo.username || '未设置'"></uv-cell>
+      <uv-cell title="邮箱" :value="userInfo.email || '未设置'"></uv-cell>
+      <uv-cell title="注册时间" :value="userInfo.registerDate || '未知'"></uv-cell>
+    </uv-cell-group>
 
     <!-- 登录/注册 -->
-    <view class="section" v-if="!isLogin">
-      <view class="section-header">
-        <text class="section-title">登录/注册</text>
-      </view>
-      
-      <!-- 微信登录 -->
-      <view class="login-methods">
-        <button 
-          v-if="isWeixin" 
-          class="btn wechat-login-btn" 
-          open-type="getUserInfo" 
-          @getuserinfo="handleWechatLogin"
-        >
-          <text class="wechat-login-text">微信一键登录</text>
-        </button>
+    <uv-cell-group :title="isLogin ? '账户操作' : '登录/注册'" :border="true">
+      <view v-if="!isLogin">
+        <!-- 微信登录 -->
+        <view class="login-methods">
+          <uv-row v-if="isWeixin" class="login-row">
+            <uv-col :span="24">
+              <uv-button 
+                type="success" 
+                shape="circle" 
+                icon="weixin"
+                @click="handleWechatLogin"
+              >
+                微信一键登录
+              </uv-button>
+            </uv-col>
+          </uv-row>
+          
+          <!-- 手机号一键登录 -->
+          <uv-row v-if="isWeixin" class="login-row">
+            <uv-col :span="24">
+              <uv-button 
+                type="primary" 
+                shape="circle" 
+                icon="phone"
+                open-type="getPhoneNumber" 
+                @getphonenumber="handlePhoneNumberLogin"
+              >
+                手机号一键登录
+              </uv-button>
+            </uv-col>
+          </uv-row>
+        </view>
         
-        <!-- 手机号一键登录 -->
-        <button 
-          v-if="isWeixin" 
-          class="btn phone-login-btn" 
-          open-type="getPhoneNumber" 
-          @getphonenumber="handlePhoneNumberLogin"
-        >
-          <text class="phone-login-text">手机号一键登录</text>
-        </button>
-      </view>
-      
-      <view class="divider">
-        <text class="divider-text">或</text>
-      </view>
-      
-      <view class="form-group">
-        <input 
-          class="input" 
-          type="text" 
-          placeholder="用户名" 
-          v-model="loginForm.username"
-        />
-      </view>
-      <view class="form-group">
-        <input 
-          class="input" 
-          type="password" 
-          placeholder="密码" 
-          v-model="loginForm.password"
-        />
-      </view>
-      <view class="button-group">
-        <button class="btn primary" @click="handleLogin">登录</button>
-        <button class="btn secondary" @click="handleRegister">注册</button>
-      </view>
-    </view>
-
-    <!-- 已登录状态 -->
-    <view class="section" v-else>
-      <view class="section-header">
-        <text class="section-title">账户操作</text>
-      </view>
-      <view class="button-group">
-        <button class="btn danger" @click="handleLogout">退出登录</button>
-      </view>
-    </view>
-
-    <!-- 设置 -->
-    <view class="section">
-      <view class="section-header">
-        <text class="section-title">设置</text>
-      </view>
-      <view class="setting-item">
-        <text class="setting-label">主题模式</text>
-        <view class="switch-container">
-          <text :class="['theme-label', { active: themeMode === 'light' }]">明亮</text>
-          <switch 
-            :checked="themeMode === 'dark'" 
-            @change="toggleTheme"
-            color="#007AFF"
-          />
-          <text :class="['theme-label', { active: themeMode === 'dark' }]">暗黑</text>
+        <uv-row class="divider-row">
+          <uv-col :span="24">
+            <uv-tabs 
+              :list="tabList" 
+              @click="changeTab"
+              :current="currentTab"
+              :bold="true"
+              :fontSize="28"
+            ></uv-tabs>
+          </uv-col>
+        </uv-row>
+        
+        <view v-if="currentSegment === 0">
+          <uv-form ref="loginFormRef" :model="loginForm">
+            <uv-form-item label="用户名">
+              <uv-input 
+                v-model="loginForm.username" 
+                placeholder="请输入用户名" 
+                border="surround"
+                clearable
+              />
+            </uv-form-item>
+            <uv-form-item label="密码">
+              <uv-input 
+                v-model="loginForm.password" 
+                placeholder="请输入密码" 
+                border="surround"
+                clearable
+                type="password"
+              />
+            </uv-form-item>
+          </uv-form>
+          
+          <uv-row class="button-row">
+            <uv-col :span="11">
+              <uv-button 
+                type="primary" 
+                shape="circle"
+                @click="handleLogin"
+              >
+                登录
+              </uv-button>
+            </uv-col>
+            <uv-col :span="11" :offset="2">
+              <uv-button 
+                type="info" 
+                shape="circle"
+                @click="handleRegister"
+              >
+                注册
+              </uv-button>
+            </uv-col>
+          </uv-row>
+        </view>
+        
+        <view v-else>
+          <uv-form ref="phoneFormRef" :model="phoneForm">
+            <uv-form-item label="手机号">
+              <uv-input 
+                v-model="phoneForm.phoneNumber" 
+                placeholder="请输入手机号" 
+                border="surround"
+                clearable
+                type="number"
+              />
+            </uv-form-item>
+            <uv-form-item label="验证码">
+              <uv-row :gutter="10">
+                <uv-col :span="14">
+                  <uv-input 
+                    v-model="phoneForm.verifyCode" 
+                    placeholder="请输入验证码" 
+                    border="surround"
+                    clearable
+                    type="number"
+                  />
+                </uv-col>
+                <uv-col :span="10">
+                  <uv-button 
+                    type="warning" 
+                    shape="circle"
+                    :disabled="codeDisabled"
+                    @click="sendVerifyCode"
+                    size="mini"
+                  >
+                    {{ codeText }}
+                  </uv-button>
+                </uv-col>
+              </uv-row>
+            </uv-form-item>
+          </uv-form>
+          
+          <uv-row class="button-row">
+            <uv-col :span="24">
+              <uv-button 
+                type="primary" 
+                shape="circle"
+                @click="handlePhoneLogin"
+              >
+                登录
+              </uv-button>
+            </uv-col>
+          </uv-row>
         </view>
       </view>
-    </view>
+      
+      <view v-else>
+        <uv-row class="button-row">
+          <uv-col :span="24">
+            <uv-button 
+              type="error" 
+              shape="circle"
+              @click="handleLogout"
+            >
+              退出登录
+            </uv-button>
+          </uv-col>
+        </uv-row>
+      </view>
+    </uv-cell-group>
+
+    <!-- 设置 -->
+    <uv-cell-group title="设置" :border="true">
+      <uv-cell title="主题模式">
+        <template #value>
+          <view class="switch-container">
+            <text :class="['theme-label', { active: themeMode === 'light' }]">明亮</text>
+            <uv-switch 
+              :modelValue="themeMode === 'dark'" 
+              @change="toggleTheme"
+              activeColor="#007AFF"
+            ></uv-switch>
+            <text :class="['theme-label', { active: themeMode === 'dark' }]">暗黑</text>
+          </view>
+        </template>
+      </uv-cell>
+    </uv-cell-group>
   </view>
+  
+  <!-- 自定义 tabBar -->
+  <custom-tab-bar ref="tabBar"></custom-tab-bar>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import CustomTabBar from '@/components/custom-tab-bar.vue'
 
 // 用户信息
 const userInfo = ref({
@@ -124,6 +205,12 @@ const loginForm = ref({
   password: ''
 })
 
+// 手机号登录表单
+const phoneForm = ref({
+  phoneNumber: '',
+  verifyCode: ''
+})
+
 // 登录状态
 const isLogin = ref(false)
 
@@ -132,6 +219,21 @@ const isWeixin = ref(false)
 
 // 主题模式
 const themeMode = ref('light')
+
+// 标签页
+const currentTab = ref(0)
+const tabList = ref([
+  { name: '账号登录' },
+  { name: '手机登录' }
+])
+
+// 验证码按钮状态
+const codeDisabled = ref(false)
+const codeText = ref('获取验证码')
+let countdown = 60
+
+// tabBar引用
+const tabBar = ref(null)
 
 // 主题变化监听函数
 let themeChangeListener
@@ -225,6 +327,41 @@ const applyTheme = () => {
       backgroundColor: '#F8F8F8'
     })
   }
+}
+
+// 切换标签页
+const changeTab = (item) => {
+  currentTab.value = item.index
+}
+
+// 发送验证码
+const sendVerifyCode = () => {
+  if (!phoneForm.value.phoneNumber) {
+    uni.showToast({
+      title: '请输入手机号',
+      icon: 'none'
+    })
+    return
+  }
+  
+  // 模拟发送验证码
+  codeDisabled.value = true
+  const timer = setInterval(() => {
+    if (countdown > 0) {
+      countdown--
+      codeText.value = `${countdown}秒后重发`
+    } else {
+      clearInterval(timer)
+      codeDisabled.value = false
+      codeText.value = '获取验证码'
+      countdown = 60
+    }
+  }, 1000)
+  
+  uni.showToast({
+    title: '验证码已发送',
+    icon: 'success'
+  })
 }
 
 // 处理微信登录
@@ -357,6 +494,33 @@ const handleLogin = () => {
   })
 }
 
+// 处理手机登录
+const handlePhoneLogin = () => {
+  if (!phoneForm.value.phoneNumber || !phoneForm.value.verifyCode) {
+    uni.showToast({
+      title: '请输入手机号和验证码',
+      icon: 'none'
+    })
+    return
+  }
+  
+  // 模拟登录逻辑
+  userInfo.value = {
+    username: phoneForm.value.phoneNumber,
+    email: `${phoneForm.value.phoneNumber}@example.com`,
+    registerDate: new Date().toLocaleDateString()
+  }
+  isLogin.value = true
+  
+  // 保存登录状态
+  uni.setStorageSync('token', 'phone_login_token')
+  
+  uni.showToast({
+    title: '登录成功',
+    icon: 'success'
+  })
+}
+
 // 处理注册
 const handleRegister = () => {
   if (!loginForm.value.username || !loginForm.value.password) {
@@ -395,6 +559,10 @@ const handleLogout = () => {
     username: '',
     password: ''
   }
+  phoneForm.value = {
+    phoneNumber: '',
+    verifyCode: ''
+  }
   isLogin.value = false
   
   // 清除登录状态
@@ -423,26 +591,6 @@ const handleLogout = () => {
   font-weight: bold;
 }
 
-.section {
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
-}
-
-.section-header {
-  border-bottom: 1rpx solid #eee;
-  padding-bottom: 20rpx;
-  margin-bottom: 30rpx;
-}
-
-.section-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-}
-
 .info-item {
   display: flex;
   justify-content: space-between;
@@ -464,39 +612,24 @@ const handleLogout = () => {
   color: #333;
 }
 
-.form-group {
-  margin-bottom: 30rpx;
-}
-
-.input {
-  width: 100%;
-  height: 80rpx;
-  padding: 0 20rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
-
-.button-group {
-  display: flex;
-  gap: 20rpx;
+.button-row {
+  margin-top: 20rpx;
 }
 
 .btn {
-  flex: 1;
+  width: 100%;
   height: 80rpx;
   border-radius: 10rpx;
   font-size: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
 }
 
 .primary {
   background-color: #007AFF;
   color: white;
-  border: none;
 }
 
 .secondary {
@@ -508,7 +641,6 @@ const handleLogout = () => {
 .danger {
   background-color: #FF3B30;
   color: white;
-  border: none;
 }
 
 .setting-item {
@@ -544,6 +676,7 @@ const handleLogout = () => {
   background-color: #07c160;
   color: white;
   margin-bottom: 20rpx;
+  gap: 10rpx;
 }
 
 .wechat-login-text {
@@ -555,40 +688,33 @@ const handleLogout = () => {
   background-color: #007AFF;
   color: white;
   margin-bottom: 20rpx;
+  gap: 10rpx;
 }
 
 .phone-login-text {
   font-size: 32rpx;
 }
 
-/* 分割线 */
-.divider {
-  text-align: center;
-  position: relative;
-  margin: 30rpx 0;
-}
-
-.divider-text {
-  background-color: #fff;
-  padding: 0 20rpx;
-  color: #999;
+/* 验证码按钮样式 */
+.code-btn {
+  background-color: #007AFF;
+  color: white;
+  height: 70rpx;
   font-size: 28rpx;
 }
 
-.divider::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1rpx;
-  background-color: #eee;
-  z-index: 1;
+.code-btn[disabled] {
+  background-color: #cccccc;
 }
 
-.divider-text {
-  position: relative;
-  z-index: 2;
+/* 登录方式行 */
+.login-row {
+  margin-bottom: 20rpx;
+}
+
+/* 分割行 */
+.divider-row {
+  margin: 30rpx 0;
 }
 
 /* 暗黑主题样式 - 使用媒体查询方式 */
@@ -598,42 +724,12 @@ const handleLogout = () => {
     color: #fff;
   }
 
-  .section {
-    background-color: #2d2d2d;
-    color: #fff;
-  }
-
-  .section-title {
-    color: #fff;
-  }
-
-  .label {
-    color: #aaa;
-  }
-
-  .value {
-    color: #fff;
-  }
-
-  .input {
-    background-color: #3a3a3a;
-    color: #fff;
-    border-color: #444;
-  }
-
-  .secondary {
-    background-color: #3a3a3a;
-    color: #fff;
-    border-color: #444;
-  }
-  
-  .divider-text {
-    background-color: #2d2d2d;
+  .theme-label {
     color: #aaa;
   }
   
-  .divider::before {
-    background-color: #444;
+  .theme-label.active {
+    color: #007AFF;
   }
 }
 </style>

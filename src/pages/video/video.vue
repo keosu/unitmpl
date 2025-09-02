@@ -17,11 +17,13 @@
     <view class="video-info">
       <text class="info-text">这是一个视频播放页面</text>
     </view>
+    <custom-tab-bar ref="tabBar"></custom-tab-bar>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
+import CustomTabBar from '@/components/custom-tab-bar.vue'
 
 const videoSrc = ref('/static/video/test.mp4')
 
@@ -36,6 +38,21 @@ const onPause = () => {
 const onEnded = () => {
   console.log('视频播放结束')
 }
+
+// 在页面显示时更新tabBar激活状态
+const tabBar = ref(null)
+
+onShow(() => {
+  nextTick(() => {
+    if (tabBar.value) {
+      // 获取当前页面路径
+      const pages = getCurrentPages()
+      const currentPage = pages[pages.length - 1]
+      const route = currentPage.route
+      tabBar.value.setActiveTab('/' + route)
+    }
+  })
+})
 </script>
 
 <style scoped>

@@ -43,15 +43,17 @@
     <view class="audio-info">
       <text class="info-text">使用 uni.createInnerAudioContext() API 实现音频播放</text>
     </view>
+    <custom-tab-bar ref="tabBar"></custom-tab-bar>
   </view>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
+import CustomTabBar from '@/components/custom-tab-bar.vue'
 
 // 音频上下文
-const innerAudioContext = ref(null)
+let audioContext = null
 
 // 音频状态
 const isPlaying = ref(false)
@@ -60,85 +62,124 @@ const currentTime = ref('00:00')
 const duration = ref('00:00')
 const sliderValue = ref(0)
 
-// 音频源
-const audioSrc = ref('/static/audio/test.mp3')
+// 页面加载时初始化
+onMounted(() => {
+  initAudio()
+})
 
-// 格式化时间显示
-const formatTime = (time) => {
-  if (isNaN(time) || time <= 0) return '00:00'
-  const minutes = Math.floor(time)
-  const seconds = Math.floor((time - minutes) * 60)
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-}
+// 页面卸载时销毁音频上下文
+onUnmounted(() => {
+  if (audioContext) {
+    audioContext.destroy()
+  }
+})
 
-// 创建音频上下文
-const initAudioContext = () => {
-  innerAudioContext.value = uni.createInnerAudioContext()
-  innerAudioContext.value.src = audioSrc.value
+// 页面显示时
+onShow(() => {
+  nextTick(() => {
+    // 更新tabBar激活状态
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+    const route = currentPage.route
+    if (tabBar.value) {
+      tabBar.value.setActiveTab('/' + route)
+    }
+    
+    console.log('音频页面显示')
+  })
+})
+
+// 页面隐藏时暂停音频
+onHide(() => {
+  if (audioContext && isPlaying.value) {
+    audioContext.pause()
+    isPlaying.value = false
+    console.log('音频页面隐藏，暂停播放')
+  }
+})
+
+// 初始化音频
+const initAudio = () => {
+  // 创建音频上下文
+  audioContext = uni.createInnerAudioContext()
+  
+  // 设置音频源
+  audioContext.src = '/static/audio/test.mp3'
   
   // 监听音频进入可以播放状态
-  innerAudioContext.value.onCanplay(() => {
+  audioContext.onCanplay(() => {
+    console.log('音频准备就绪')
     audioReady.value = true
-    const dur = innerAudioContext.value.duration || 0
-    duration.value = formatTime(dur)
+    
+    // 获取音频总时长
+    duration.value = formatTime(audioContext.duration)
   })
   
-  // 监听播放事件
-  innerAudioContext.value.onPlay(() => {
+  // 监听音频播放事件
+  audioContext.onPlay(() => {
+    console.log('音频开始播放')
     isPlaying.value = true
-    console.log('开始播放')
   })
   
-  // 监听暂停事件
-  innerAudioContext.value.onPause(() => {
+  // 监听音频暂停事件
+  audioContext.onPause(() => {
+    console.log('音频暂停')
     isPlaying.value = false
-    console.log('暂停播放')
   })
   
-  // 监听停止事件
-  innerAudioContext.value.onStop(() => {
+  // 监听音频停止事件
+  audioContext.onStop(() => {
+    console.log('音频停止')
     isPlaying.value = false
     currentTime.value = '00:00'
     sliderValue.value = 0
-    console.log('停止播放')
   })
   
-  // 监听播放进度更新事件
-  innerAudioContext.value.onTimeUpdate(() => {
-    const current = innerAudioContext.value.currentTime
-    const dur = innerAudioContext.value.duration || 0
-    // 更新时间显示
-    currentTime.value = formatTime(current)
-    duration.value = formatTime(dur)
+  // 监听音频播放结束事件
+  audioContext.onEnded(() => {
+    console.log('音频播放结束')
+    isPlaying.value = false
+    currentTime.value = '00:00'
+    sliderValue.value = 0
+  })
+  
+  // 监听音频播放进度更新事件
+  audioContext.onTimeUpdate(() => {
+    currentTime.value = formatTime(audioContext.currentTime)
     // 更新进度条
-    if (dur > 0) {
-      sliderValue.value = (current / dur) * 100
+    if (audioContext.duration > 0) {
+      sliderValue.value = (audioContext.currentTime / audioContext.duration) * 100
     }
   })
   
-  // 监听自然播放结束事件
-  innerAudioContext.value.onEnded(() => {
-    isPlaying.value = false
-    currentTime.value = '00:00'
-    sliderValue.value = 0
-    console.log('播放结束')
-  })
-  
-  // 监听播放错误事件
-  innerAudioContext.value.onError((res) => {
+  // 监听音频播放错误事件
+  audioContext.onError((res) => {
     console.error('音频播放错误:', res.errMsg)
-    console.error('错误码:', res.errCode)
+    uni.showToast({
+      title: '音频播放错误',
+      icon: 'none'
+    })
   })
 }
 
-// 播放/暂停切换
+// 格式化时间
+const formatTime = (time) => {
+  if (isNaN(time)) return '00:00'
+  
+  const minutes = Math.floor(time / 60)
+  const seconds = Math.floor(time % 60)
+  
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
+// 切换播放/暂停
 const togglePlay = () => {
   if (!audioReady.value) return
   
   if (isPlaying.value) {
-    innerAudioContext.value.pause()
+    audioContext.pause()
   } else {
-    innerAudioContext.value.play()
+    audioContext.play()
   }
 }
 
@@ -146,51 +187,20 @@ const togglePlay = () => {
 const stop = () => {
   if (!audioReady.value) return
   
-  innerAudioContext.value.stop()
+  audioContext.stop()
 }
 
 // 进度条变化
 const onSliderChange = (e) => {
-  if (!audioReady.value || !innerAudioContext.value.duration) return
+  if (!audioReady.value) return
   
   const value = e.detail.value
-  const time = (value / 100) * innerAudioContext.value.duration
-  innerAudioContext.value.seek(time)
+  const seekTime = (value / 100) * audioContext.duration
+  audioContext.seek(seekTime)
 }
 
-// 暂停播放
-const pausePlayback = () => {
-  console.log('暂停播放函数被调用')
-  if (innerAudioContext.value && isPlaying.value) {
-    innerAudioContext.value.pause()
-  }
-}
-
-// 页面显示时的处理函数
-onShow(() => {
-  console.log('音频页面显示')
-})
-
-
-// 页面隐藏时的处理函数
-onHide(() => {
-  console.log('音频页面隐藏，暂停播放')
-  pausePlayback()
-})
-
-// 组件挂载时初始化音频上下文
-onMounted(() => {
-  console.log('音频页面挂载')
-  initAudioContext()
-})
-
-// 组件卸载时销毁音频上下文
-onUnmounted(() => {
-  console.log('音频页面卸载')
-  if (innerAudioContext.value) {
-    innerAudioContext.value.destroy()
-  }
-})
+// tabBar引用
+const tabBar = ref(null)
 </script>
 
 <style scoped>
@@ -213,33 +223,27 @@ onUnmounted(() => {
   margin-bottom: 40rpx;
 }
 
-.audio-player {
-  width: 100%;
+.custom-audio-player {
   padding: 30rpx;
   background-color: #f8f8f8;
   border-radius: 10rpx;
-  box-sizing: border-box;
-}
-
-.custom-audio-player {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
 }
 
 .audio-info-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 30rpx;
 }
 
 .audio-title {
   font-size: 32rpx;
   font-weight: bold;
+  color: #333;
 }
 
 .audio-time {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #666;
 }
 
@@ -247,23 +251,24 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   gap: 20rpx;
+  margin-bottom: 30rpx;
 }
 
 .control-button {
-  padding: 10rpx 20rpx;
-  background-color: #007aff;
+  padding: 15rpx 30rpx;
+  font-size: 28rpx;
+  background-color: #007AFF;
   color: white;
   border: none;
-  border-radius: 6rpx;
-  font-size: 28rpx;
+  border-radius: 10rpx;
 }
 
 .control-button[disabled] {
-  background-color: #ccc;
+  background-color: #cccccc;
 }
 
 .progress-container {
-  width: 100%;
+  padding: 0 20rpx;
 }
 
 .progress-slider {
@@ -277,7 +282,7 @@ onUnmounted(() => {
 }
 
 .info-text {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #666;
 }
 </style>
