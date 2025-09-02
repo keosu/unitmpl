@@ -1,0 +1,332 @@
+/* 全局主题样式系统 */
+
+/* ===== 基础容器主题 ===== */
+.theme-light {
+	--primary-bg: #ffffff;
+	--secondary-bg: #f8f9fa;
+	--tertiary-bg: #e9ecef;
+	--text-primary: #2c3e50;
+	--text-secondary: #6c757d;
+	--text-muted: #adb5bd;
+	--border-color: #dee2e6;
+	--border-light: #e9ecef;
+	--shadow-light: rgba(0, 0, 0, 0.05);
+	--shadow-medium: rgba(0, 0, 0, 0.1);
+	--shadow-heavy: rgba(0, 0, 0, 0.15);
+	--overlay-light: rgba(0, 0, 0, 0.03);
+	--overlay-medium: rgba(0, 0, 0, 0.08);
+	--overlay-heavy: rgba(0, 0, 0, 0.15);
+}
+
+.theme-dark {
+	--primary-bg: #1a1a1a;
+	--secondary-bg: #2d2d2d;
+	--tertiary-bg: #404040;
+	--text-primary: #ffffff;
+	--text-secondary: #b0b0b0;
+	--text-muted: #6c757d;
+	--border-color: #404040;
+	--border-light: #2d2d2d;
+	--shadow-light: rgba(0, 0, 0, 0.2);
+	--shadow-medium: rgba(0, 0, 0, 0.3);
+	--shadow-heavy: rgba(0, 0, 0, 0.4);
+	--overlay-light: rgba(255, 255, 255, 0.05);
+	--overlay-medium: rgba(255, 255, 255, 0.1);
+	--overlay-heavy: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== 页面容器主题 ===== */
+.page-container {
+	transition: all 0.3s ease;
+}
+
+.theme-light .page-container {
+	background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.theme-dark .page-container {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ===== 卡片组件主题 ===== */
+.theme-card {
+	transition: all 0.3s ease;
+	border-radius: 20px;
+	backdrop-filter: blur(10px);
+}
+
+.theme-light .theme-card {
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid var(--border-light);
+	box-shadow: 0 4px 20px var(--shadow-light);
+}
+
+.theme-dark .theme-card {
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 4px 20px var(--shadow-light);
+}
+
+/* ===== 输入框组件主题 ===== */
+.theme-input {
+	transition: all 0.3s ease;
+	border-radius: 25px;
+}
+
+.theme-light .theme-input {
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid var(--border-light);
+	color: var(--text-primary);
+}
+
+.theme-dark .theme-input {
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	color: var(--text-primary);
+}
+
+/* ===== 按钮组件主题 ===== */
+.theme-btn {
+	transition: all 0.3s ease;
+	border-radius: 20px;
+}
+
+.theme-light .theme-btn {
+	background: var(--overlay-medium);
+	color: var(--text-primary);
+	border: 1px solid var(--border-light);
+}
+
+.theme-dark .theme-btn {
+	background: rgba(255, 255, 255, 0.2);
+	color: var(--text-primary);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-btn:active {
+	transform: scale(0.95);
+}
+
+/* ===== 文字主题 ===== */
+.theme-text-primary {
+	transition: color 0.3s ease;
+}
+
+.theme-light .theme-text-primary {
+	color: var(--text-primary);
+	text-shadow: none;
+}
+
+.theme-dark .theme-text-primary {
+	color: var(--text-primary);
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.theme-text-secondary {
+	transition: color 0.3s ease;
+}
+
+.theme-light .theme-text-secondary {
+	color: var(--text-secondary);
+}
+
+.theme-dark .theme-text-secondary {
+	color: var(--text-secondary);
+}
+
+/* ===== 分割线主题 ===== */
+.theme-divider {
+	transition: background-color 0.3s ease;
+}
+
+.theme-light .theme-divider {
+	background: var(--border-light);
+}
+
+.theme-dark .theme-divider {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== 列表项主题 ===== */
+.theme-list-item {
+	transition: all 0.3s ease;
+	border-bottom: 1px solid transparent;
+}
+
+.theme-light .theme-list-item {
+	border-bottom-color: var(--border-light);
+}
+
+.theme-dark .theme-list-item {
+	border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-list-item:active {
+	background: var(--overlay-medium);
+}
+
+/* ===== 图标容器主题 ===== */
+.theme-icon-container {
+	transition: all 0.3s ease;
+	border-radius: 15px;
+	box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.theme-light .theme-icon-container {
+	box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.theme-dark .theme-icon-container {
+	box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+/* ===== 头部区域主题 ===== */
+.theme-header {
+	transition: all 0.3s ease;
+	
+}
+
+
+/* ===== 导航主题 ===== */
+.theme-nav-item {
+	transition: all 0.3s ease;
+}
+
+.theme-light .theme-nav-item {
+	color: var(--text-primary);
+}
+
+.theme-dark .theme-nav-item {
+	color: var(--text-primary);
+}
+
+/* ===== 搜索栏主题 ===== */
+.theme-search-bar {
+	transition: all 0.3s ease;
+}
+
+.theme-light .theme-search-bar {
+	background: var(--overlay-light);
+}
+
+.theme-dark .theme-search-bar {
+	background: var(--overlay-medium);
+}
+
+/* ===== 商品卡片主题 ===== */
+.theme-product-card {
+	transition: all 0.3s ease;
+	border-radius: 15px;
+	overflow: hidden;
+}
+
+.theme-light .theme-product-card {
+	background: rgba(255, 255, 255, 0.98);
+	border: 1px solid var(--border-light);
+	box-shadow: 0 8px 25px var(--shadow-light);
+}
+
+.theme-dark .theme-product-card {
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+/* ===== 服务卡片主题 ===== */
+.theme-service-card {
+	transition: all 0.3s ease;
+	border-radius: 15px;
+}
+
+.theme-light .theme-service-card {
+	background: rgba(255, 255, 255, 0.98);
+	border: 1px solid var(--border-light);
+	box-shadow: 0 8px 25px var(--shadow-light);
+}
+
+.theme-dark .theme-service-card {
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+/* ===== 选项项主题 ===== */
+.theme-option {
+	transition: all 0.3s ease;
+	border-radius: 15px;
+	border: 2px solid transparent;
+}
+
+.theme-light .theme-option {
+	background: var(--overlay-light);
+	border-color: var(--border-light);
+}
+
+.theme-dark .theme-option {
+	background: var(--overlay-light);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-option.active {
+	background: var(--overlay-medium);
+	border-color: var(--overlay-heavy);
+	transform: translateX(5px);
+}
+
+.theme-option:active {
+	transform: scale(0.98);
+}
+
+/* ===== 勾选标记主题 ===== */
+.theme-check {
+	width: 24px;
+	height: 24px;
+	background: linear-gradient(45deg, #4ECDC4, #44A08D);
+	color: #fff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	font-weight: bold;
+	box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+}
+
+/* ===== 响应式主题切换 ===== */
+@media (prefers-color-scheme: light) {
+	.theme-auto {
+		--primary-bg: #ffffff;
+		--secondary-bg: #f8f9fa;
+		--tertiary-bg: #e9ecef;
+		--text-primary: #2c3e50;
+		--text-secondary: #6c757d;
+		--text-muted: #adb5bd;
+		--border-color: #dee2e6;
+		--border-light: #e9ecef;
+		--shadow-light: rgba(0, 0, 0, 0.05);
+		--shadow-medium: rgba(0, 0, 0, 0.1);
+		--shadow-heavy: rgba(0, 0, 0, 0.15);
+		--overlay-light: rgba(0, 0, 0, 0.03);
+		--overlay-medium: rgba(0, 0, 0, 0.08);
+		--overlay-heavy: rgba(0, 0, 0, 0.15);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.theme-auto {
+		--primary-bg: #1a1a1a;
+		--secondary-bg: #2d2d2d;
+		--tertiary-bg: #404040;
+		--text-primary: #ffffff;
+		--text-secondary: #b0b0b0;
+		--text-muted: #6c757d;
+		--border-color: #404040;
+		--border-light: #2d2d2d;
+		--shadow-light: rgba(0, 0, 0, 0.2);
+		--shadow-medium: rgba(0, 0, 0, 0.3);
+		--shadow-heavy: rgba(0, 0, 0, 0.4);
+		--overlay-light: rgba(255, 255, 255, 0.05);
+		--overlay-medium: rgba(255, 255, 255, 0.1);
+		--overlay-heavy: rgba(255, 255, 255, 0.2);
+	}
+}

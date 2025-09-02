@@ -46,15 +46,15 @@
 
 			<view class="action" @tap.stop="changeTabbar(0)">
 				<view class="bar-icon">
-					<image class="" src="@/static/logo.png"></image>
+					<image class="" src="https://picsum.photos/55/55?random=1"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 0 ? 'icon-select' : 'tn-color-gray']">首页</view>
+				<view class="" :class="[currentTabbarIndex === 0 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.home') }}</view>
 			</view>
 			<view class="action" @tap.stop="changeTabbar(1)">
 				<view class="bar-icon">
-					<image class="" src="@/static/logo.png"></image>
+					<image class="" src="https://picsum.photos/55/55?random=2"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 1 ? 'icon-select' : 'tn-color-gray']">分类</view>
+				<view class="" :class="[currentTabbarIndex === 1 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.category') }}</view>
 			</view>
 
 			<view class="action bar-center" @tap.stop="changeTabbar(2)">
@@ -77,20 +77,20 @@
 						</view>
 					</view>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 2 ? 'icon-select' : 'tn-color-gray']">发布</view>
+				<view class="" :class="[currentTabbarIndex === 2 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.publish') }}</view>
 			</view>
 
 			<view class="action" @tap.stop="changeTabbar(3)">
 				<view class="bar-icon">
-					<image class="" src="@/static/logo.png"></image>
+					<image class="" src="https://picsum.photos/55/55?random=4"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 3 ? 'icon-select' : 'tn-color-gray']">统计</view>
+				<view class="" :class="[currentTabbarIndex === 3 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.statistics') }}</view>
 			</view>
 			<view class="action" @tap.stop="changeTabbar(4)">
 				<view class="bar-icon">
-					<image class="" src="@/static/logo.png"></image>
+					<image class="" src="https://picsum.photos/55/55?random=5"></image>
 				</view>
-				<view class="" :class="[currentTabbarIndex === 4 ? 'icon-select' : 'tn-color-gray']">我的</view>
+				<view class="" :class="[currentTabbarIndex === 4 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.my') }}</view>
 			</view>
 		</view>
 	</view>
@@ -103,7 +103,8 @@ import productPage from '@/pages/index/components/product/product.vue'
 import servicePage from '@/pages/index/components/service/service.vue'
 import myPage from '@/pages/index/components/my/my.vue'
 import {
-	ref
+	ref,
+	computed
 } from 'vue'
 import {
 	onLoad
@@ -114,15 +115,16 @@ import {
 const globalStore = useGlobalOptionStore()
 const currentTabbarIndex = ref(0)
 const tabberPageLoadFlag = ref([])
-
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 // 定义tabbar标题列表
-const tabbarTitleList = [
-	'首页',
-	'分类',
-	'发布',
-	'统计',
-	'我的'
-]
+const tabbarTitleList = computed(() => [
+	t('tabbar.home'),
+	t('tabbar.category'),
+	t('tabbar.publish'),
+	t('tabbar.statistics'),
+	t('tabbar.my')
+])
 
 onLoad((options) => {
 	const index = Number(options.index || 0)
@@ -148,9 +150,9 @@ function changeTabbar(index) {
 	currentTabbarIndex.value = index
 
 	// //切换标题
-	// uni.setNavigationBarTitle({
-	// 	title: tabbarTitleList[index]
-	// })
+	uni.setNavigationBarTitle({
+		title: tabbarTitleList.value[index]
+	})
 }
 
 // 切换导航页面
