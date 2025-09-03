@@ -102,11 +102,11 @@
 </template>
 
 <script setup>
-import homePage from '@/pages/index/components/home/home.vue'
-import orderPage from '@/pages/index/components/order/order.vue'
-import productPage from '@/pages/index/components/product/product.vue'
-import servicePage from '@/pages/index/components/service/service.vue'
-import myPage from '@/pages/index/components/my/my.vue'
+import homePage from '@/pages/home/home.vue'
+import orderPage from '@/pages/order/order.vue'
+import productPage from '@/pages/product/product.vue'
+import servicePage from '@/pages/service/service.vue'
+import myPage from '@/pages/my/my.vue'
 import {
 	ref,
 	computed
