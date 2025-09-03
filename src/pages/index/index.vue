@@ -40,64 +40,16 @@
 		</view>
 
 		<!-- 底部导航栏 -->
-		<view class="tabbar">
-			<!-- 图鸟裁剪tabbar-->
-			<view class="mask"></view>
+		<up-tabbar :value="value1" @change="changeTabbar" :fixed="true" :placeholder="false"
+			:safeAreaInsetBottom="false">
+			<up-tabbar-item :text="t('tabbar.home')" icon="home" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.category')" icon="photo" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.publish')" icon="play-right" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.statistics')" icon="play-right" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.my')" icon="account" @click="click1"></up-tabbar-item>
+		</up-tabbar>
 
-			<view class="action" @tap.stop="changeTabbar(0)">
-				<view class="bar-icon">
-					<image class="" src="https://picsum.photos/55/55?random=1"></image>
-				</view>
-				<view class="" :class="[currentTabbarIndex === 0 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.home')
-				}}</view>
-			</view>
-			<view class="action" @tap.stop="changeTabbar(1)">
-				<view class="bar-icon">
-					<image class="" src="https://picsum.photos/55/55?random=2"></image>
-				</view>
-				<view class="" :class="[currentTabbarIndex === 1 ? 'icon-select' : 'tn-color-gray']">{{
-					t('tabbar.category') }}</view>
-			</view>
 
-			<view class="action bar-center" @tap.stop="changeTabbar(2)">
-				<view class="bar-circle nav-index-button">
-					<view class="nav-index-button__content">
-						<view class="nav-index-button__content--icon tn-flex tn-flex-row-center tn-flex-col-center">
-							<view class="bar-circle">
-								<image class="" src='https://resource.tuniaokj.com/images/tabbar/planet.png'></image>
-
-							</view>
-						</view>
-					</view>
-
-					<view class="nav-index-button__meteor">
-						<view class="nav-index-button__meteor__wrapper">
-							<view v-for="(item, index) in 6" :key="index" class="nav-index-button__meteor__item"
-								:style="{ transform: `rotateX(${-60 + (30 * index)}deg) rotateZ(${-60 + (30 * index)}deg)` }">
-								<view class="nav-index-button__meteor__item--pic"></view>
-							</view>
-						</view>
-					</view>
-				</view>
-				<view class="" :class="[currentTabbarIndex === 2 ? 'icon-select' : 'tn-color-gray']">{{
-					t('tabbar.publish') }}</view>
-			</view>
-
-			<view class="action" @tap.stop="changeTabbar(3)">
-				<view class="bar-icon">
-					<image class="" src="https://picsum.photos/55/55?random=4"></image>
-				</view>
-				<view class="" :class="[currentTabbarIndex === 3 ? 'icon-select' : 'tn-color-gray']">{{
-					t('tabbar.statistics') }}</view>
-			</view>
-			<view class="action" @tap.stop="changeTabbar(4)">
-				<view class="bar-icon">
-					<image class="" src="https://picsum.photos/55/55?random=5"></image>
-				</view>
-				<view class="" :class="[currentTabbarIndex === 4 ? 'icon-select' : 'tn-color-gray']">{{ t('tabbar.my')
-				}}</view>
-			</view>
-		</view>
 	</view>
 </template>
 

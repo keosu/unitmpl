@@ -15,7 +15,7 @@ import { getHomeData } from '@/api/home'
 
 onLaunch(async () => {
 	console.log('onLaunch')
-	const res = await getHomeData()
+	// const res = await getHomeData()
 	console.log(res,'res')
 })
 
