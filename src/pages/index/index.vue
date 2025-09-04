@@ -24,34 +24,12 @@
 		</view>
 
 		<!-- 底部导航栏 -->
-		<up-tabbar 
-			:value="currentTabbarIndex" 
-			@change="changeTabbar" 
-			:fixed="true" 
-			:placeholder="true"
-			:safeAreaInsetBottom="true"
-			:bgColor="themeStore.currentTheme === 'dark' ? '#2d3748' : '#ffffff'"
-			:activeColor="themeStore.currentTheme === 'dark' ? '#63b3ed' : '#007aff'"
-			:inactiveColor="themeStore.currentTheme === 'dark' ? '#a0aec0' : '#999999'"
-			borderTop
-			:borderColor="themeStore.currentTheme === 'dark' ? '#4a5568' : '#e4e7ed'"
-		>
-			<up-tabbar-item 
-				:text="t('tabbar.search')" 
-				icon="search" 
-				@click="click1"
-			></up-tabbar-item>
-			<up-tabbar-item 
-				:text="t('tabbar.chat')" 
-				icon="chat" 
-				@click="click1"
-			></up-tabbar-item>
-			<up-tabbar-item 
-				:text="t('tabbar.profile')" 
-				icon="account" 
-				@click="click1"
-			></up-tabbar-item>
-		</up-tabbar>
+		<CustomTabbar 
+			:value="currentTabbarIndex"
+			:items="tabbarItems"
+			:currentTheme="themeStore.currentTheme"
+			@change="changeTabbar"
+		/>
 
 
 	</view>
@@ -61,6 +39,7 @@
 import searchPage from '@/pages/search/search.vue'
 import chatPage from '@/pages/chat/chat.vue'
 import profilePage from '@/pages/profile/profile.vue'
+import CustomTabbar from '@/components/CustomTabbar.vue'
 import {
 	ref,
 	computed
@@ -83,6 +62,23 @@ const globalStore = useGlobalOptionStore()
 const userStore = useUserStore()
 const currentTabbarIndex = ref(1) // 默认选中聊天页面
 const tabberPageLoadFlag = ref([])
+
+// 定义tabbar数据（使用emoji图标）
+const tabbarItems = computed(() => [
+	{
+		text: t('tabbar.search'),
+		emoji: '🔍' // 搜索emoji
+	},
+	{
+		text: t('tabbar.chat'),
+		emoji: '💬' // 聊天emoji
+	},
+	{
+		text: t('tabbar.profile'),
+		emoji: '👤' // 个人资料emoji
+	}
+])
+
 // 定义tabbar标题列表
 const tabbarTitleList = computed(() => [
 	t('tabbar.search'),
@@ -161,7 +157,7 @@ function click1() {
 
 	.custom-tabbar-page {
 		width: 100%;
-		height: calc(100vh - 80px); // 给 tabbar 留出空间
+		height: calc(100vh - 120rpx); // 适配新的tabbar高度
 		background: #F3F4F6;
 		box-sizing: border-box;
 		padding-bottom: 20rpx; // 额外的底部间距
@@ -171,7 +167,7 @@ function click1() {
 
 	.chat-page-wrapper {
 		width: 100%;
-		height: calc(100vh - 80px); // 给 tabbar 留出空间
+		height: calc(100vh - 120rpx); // 适配新的tabbar高度
 		position: relative; // 为聊天页面的固定输入框提供定位参考
 	}
 
@@ -202,52 +198,5 @@ function click1() {
 	}
 }
 
-/* 为 tabbar 添加额外的主题样式 */
-.theme-dark {
-	/* 确保 tabbar 在暗色主题下的样式 */
-	:deep(.u-tabbar) {
-		background-color: #2d3748 !important;
-		border-top: 1px solid #4a5568 !important;
-		box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3) !important;
-	}
-	
-	:deep(.u-tabbar-item__text) {
-		color: #a0aec0 !important;
-	}
-	
-	:deep(.u-tabbar-item--active .u-tabbar-item__text) {
-		color: #63b3ed !important;
-	}
-	
-	:deep(.u-tabbar-item__icon) {
-		color: #a0aec0 !important;
-	}
-	
-	:deep(.u-tabbar-item--active .u-tabbar-item__icon) {
-		color: #63b3ed !important;
-	}
-	
-	/* 适配uview-plus的新版本类名 */
-	:deep(.up-tabbar) {
-		background-color: #2d3748 !important;
-		border-top: 1px solid #4a5568 !important;
-		box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3) !important;
-	}
-	
-	:deep(.up-tabbar-item__text) {
-		color: #a0aec0 !important;
-	}
-	
-	:deep(.up-tabbar-item--active .up-tabbar-item__text) {
-		color: #63b3ed !important;
-	}
-	
-	:deep(.up-tabbar-item__icon) {
-		color: #a0aec0 !important;
-	}
-	
-	:deep(.up-tabbar-item--active .up-tabbar-item__icon) {
-		color: #63b3ed !important;
-	}
-}
+/* 自定义tabbar已替代up-tabbar，无需深度样式覆盖 */
 </style>
