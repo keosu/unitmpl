@@ -181,12 +181,72 @@ const showSettings = () => {
 </script>
 
 <style scoped>
+/* 浅色主题（默认） */
 .chat-container {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	background: #f8f9fa;
 	position: relative;
+}
+
+.chat-header {
+	background: #fff;
+	border-bottom: 1px solid #eee;
+	padding: 15px 20px;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+/* 暗色主题 */
+.theme-dark .chat-container {
+	background: #1a1a1a;
+}
+
+.theme-dark .chat-header {
+	background: #2d3748;
+	border-bottom-color: #4a5568;
+}
+
+.theme-dark .chat-title {
+	color: #e2e8f0;
+}
+
+.theme-dark .message-bubble.received {
+	background: #2d3748;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .message-bubble.received .message-text {
+	color: #e2e8f0;
+}
+
+.theme-dark .typing-bubble {
+	background: #2d3748;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .typing-text {
+	color: #a0aec0;
+}
+
+.theme-dark .input-area {
+	background: #2d3748;
+	border-top-color: #4a5568;
+	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .input-wrapper {
+	background: #4a5568;
+}
+
+.theme-dark .input-text {
+	color: #e2e8f0;
+}
+
+.theme-dark .char-count {
+	color: #a0aec0;
 }
 
 .chat-header {
@@ -387,45 +447,5 @@ const showSettings = () => {
 	color: #fff;
 }
 
-/* 主题样式 */
-.theme-dark .chat-container {
-	background: #f8f9fa;
-}
 
-.theme-dark .chat-header {
-	background: #667eea;
-	border-bottom-color: #5a6fd8;
-}
-
-.theme-dark .chat-title {
-	color: #fff;
-}
-
-.theme-dark .message-bubble.received {
-	background: #fff;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.theme-dark .message-bubble.received .message-text {
-	color: #333;
-}
-
-.theme-dark .typing-bubble {
-	background: #fff;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.theme-dark .input-area {
-	background: #fff;
-	border-top-color: #eee;
-	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.theme-dark .input-wrapper {
-	background: #f5f5f5;
-}
-
-.theme-dark .input-text {
-	color: #333;
-}
 </style>

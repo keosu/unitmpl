@@ -41,11 +41,11 @@
 }
 
 .theme-light .page-container {
-	background: #ffffff;
+	background: #f8f9fa;
 }
 
 .theme-dark .page-container {
-	background: #667eea;
+	background: #1a1a1a;
 }
 
 /* ===== 卡片组件主题 ===== */

@@ -53,56 +53,48 @@
 		<!-- 主题切换 -->
 		<view class="theme-section">
 			<view class="section-title">{{ t('profile.theme') }}</view>
-			<up-row gutter="30">
-				<up-col 
+			<view class="theme-buttons">
+				<up-button
 					v-for="theme in themeOptions" 
 					:key="theme.value"
-					span="6"
+					:type="themeStore.currentTheme === theme.value ? 'primary' : 'info'"
+					:plain="themeStore.currentTheme !== theme.value"
+					size="small"
+					shape="round"
+					customStyle="flex: 1; margin: 0 10rpx; height: 120rpx;"
+					@click="switchTheme(theme.value)"
 				>
-					<up-button
-						:type="themeStore.currentTheme === theme.value ? 'primary' : 'info'"
-						:plain="themeStore.currentTheme !== theme.value"
-						size="default"
-						shape="round"
-						customStyle="width: 100%; margin-bottom: 20rpx;"
-						@click="switchTheme(theme.value)"
-					>
-						<view style="display: flex; flex-direction: column; align-items: center;">
-							<view 
-								class="theme-preview" 
-								:style="{ background: theme.color }"
-							></view>
-							<text class="theme-name">{{ theme.name }}</text>
-						</view>
-					</up-button>
-				</up-col>
-			</up-row>
+					<view class="theme-button-content">
+						<view 
+							class="theme-preview" 
+							:style="{ background: theme.color }"
+						></view>
+						<text class="theme-name">{{ theme.name }}</text>
+					</view>
+				</up-button>
+			</view>
 		</view>
 
 		<!-- 语言切换 -->
 		<view class="language-section">
 			<view class="section-title">{{ t('profile.language') }}</view>
-			<up-row gutter="30">
-				<up-col 
+			<view class="language-buttons">
+				<up-button
 					v-for="lang in languageOptions" 
 					:key="lang.value"
-					span="6"
+					:type="currentLanguage === lang.value ? 'success' : 'info'"
+					:plain="currentLanguage !== lang.value"
+					size="small"
+					shape="round"
+					customStyle="flex: 1; margin: 0 10rpx; height: 120rpx;"
+					@click="switchLanguage(lang.value)"
 				>
-					<up-button
-						:type="currentLanguage === lang.value ? 'success' : 'info'"
-						:plain="currentLanguage !== lang.value"
-						size="default"
-						shape="round"
-						customStyle="width: 100%; margin-bottom: 20rpx;"
-						@click="switchLanguage(lang.value)"
-					>
-						<view style="display: flex; flex-direction: column; align-items: center;">
-							<text class="language-flag">{{ lang.flag }}</text>
-							<text class="language-name">{{ lang.name }}</text>
-						</view>
-					</up-button>
-				</up-col>
-			</up-row>
+					<view class="language-button-content">
+						<text class="language-flag">{{ lang.flag }}</text>
+						<text class="language-name">{{ lang.name }}</text>
+					</view>
+				</up-button>
+			</view>
 		</view>
 
 		<!-- 退出按钮 -->
@@ -125,6 +117,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
 import { useUserStore } from '@/store/user.js'
+import { setLocal, getLocal } from '@/utils/localStorage.js'
 
 const { t, locale } = useI18n()
 const themeStore = useThemeStore()
@@ -220,12 +213,12 @@ const themeOptions = computed(() => [
 	{
 		name: t('profile.theme_light'),
 		value: 'light',
-		color: '#667eea'
+		color: '#f8f9fa'
 	},
 	{
 		name: t('profile.theme_dark'),
 		value: 'dark',
-		color: '#2c3e50'
+		color: '#2d3748'
 	}
 ])
 
@@ -274,6 +267,8 @@ const switchTheme = (theme) => {
 
 const switchLanguage = (lang) => {
 	locale.value = lang
+	// 保存语言设置到本地存储
+	setLocal('language', lang)
 	uni.showToast({
 		title: t('profile.language_switched'),
 		icon: 'success'
@@ -297,10 +292,46 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
+/* 浅色主题（默认） */
 .profile-container {
 	min-height: 100vh;
 	background: #f8f9fa;
 	padding-bottom: 20px;
+}
+
+/* 暗色主题 */
+.theme-dark .profile-container {
+	background: #1a1a1a;
+}
+
+.theme-dark .header-bg {
+	background: #4a5568 !important;
+}
+
+.theme-dark .stats-section,
+.theme-dark .menu-group,
+.theme-dark .theme-section,
+.theme-dark .language-section {
+	background: #2d3748;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .stat-number {
+	color: #63b3ed;
+}
+
+.theme-dark .stat-label,
+.theme-dark .menu-title,
+.theme-dark .section-title {
+	color: #e2e8f0;
+}
+
+.theme-dark .menu-item {
+	border-bottom-color: #4a5568;
+}
+
+.theme-dark .menu-arrow {
+	color: #a0aec0;
 }
 
 .profile-header {
@@ -488,45 +519,40 @@ const handleLogout = () => {
 	margin-bottom: 30rpx;
 }
 
-.theme-options,
-.language-options {
+/* 主题按钮样式 */
+.theme-buttons,
+.language-buttons {
 	display: flex;
-	gap: 30rpx;
+	gap: 20rpx;
+	align-items: center;
 }
 
-.theme-option,
-.language-option {
-	flex: 1;
-	padding: 30rpx;
-	border: 4rpx solid #f0f0f0;
-	border-radius: 20rpx;
-	text-align: center;
-}
-
-.theme-option.active,
-.language-option.active {
-	border-color: #007aff;
-	background: rgba(0, 122, 255, 0.1);
+.theme-button-content,
+.language-button-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6rpx;
+	padding: 10rpx 5rpx;
 }
 
 .theme-preview {
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 40rpx;
-	margin: 0 auto 20rpx;
+	width: 40rpx;
+	height: 40rpx;
+	border-radius: 20rpx;
 }
 
 .theme-name,
 .language-name {
-	display: block;
-	font-size: 28rpx;
-	color: #333;
+	font-size: 20rpx;
+	color: inherit;
+	text-align: center;
+	line-height: 1.2;
 }
 
 .language-flag {
-	display: block;
-	font-size: 48rpx;
-	margin-bottom: 10rpx;
+	font-size: 28rpx;
+	margin-bottom: 4rpx;
 }
 
 .logout-section {
@@ -544,32 +570,18 @@ const handleLogout = () => {
 	font-weight: bold;
 }
 
-/* 主题样式 */
-.theme-dark .profile-container {
-	background: #f8f9fa;
-}
-
-.theme-dark .stats-section,
-.theme-dark .menu-group,
-.theme-dark .theme-section,
-.theme-dark .language-section {
-	background: #fff;
-	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-}
-
-.theme-dark .stat-number,
-.theme-dark .menu-title,
-.theme-dark .section-title,
-.theme-dark .theme-name,
-.theme-dark .language-name {
-	color: #333;
-}
-
-.theme-dark .stat-number {
-	color: #007aff;
-}
-
-.theme-dark .menu-item {
-	border-bottom-color: #f0f0f0;
+/* 响应式设计 - 小屏幕优化 */
+@media (max-width: 750rpx) {
+	.theme-buttons,
+	.language-buttons {
+		flex-direction: column;
+		gap: 20rpx;
+	}
+	
+	.theme-buttons > *, 
+	.language-buttons > * {
+		width: 100%;
+		margin: 0;
+	}
 }
 </style>

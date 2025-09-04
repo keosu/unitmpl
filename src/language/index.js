@@ -52,31 +52,35 @@ function getLocalLang() {
   let localLang = getLocal("language");
 
   if (!localLang) {
-    let defaultLang = navigator.language;  // 获取浏览器语言
-    if (defaultLang) {
-      // 浏览器可能是en en-us之类的，需要转换为支持的语言
-      defaultLang = defaultLang.toLowerCase();  // 将浏览器语言转换为小写
-
-      // 语言映射转换 - 使用映射表进行精确匹配
-      if (LANGUAGE_MAPPING[defaultLang]) {
-        defaultLang = LANGUAGE_MAPPING[defaultLang];
+    // 默认使用中文
+    let defaultLang = 'zh-cn';
+    
+    // 可以考虑浏览器语言，但优先使用中文
+    const browserLang = navigator.language;
+    if (browserLang) {
+      const normalizedLang = browserLang.toLowerCase();
+      
+      // 语言映射转换
+      if (LANGUAGE_MAPPING[normalizedLang]) {
+        defaultLang = LANGUAGE_MAPPING[normalizedLang];
       } else {
         // 如果没有精确匹配，尝试前缀匹配
         const prefixMatch = Object.keys(LANGUAGE_MAPPING).find(key =>
-          defaultLang.startsWith(key.split('-')[0])
+          normalizedLang.startsWith(key.split('-')[0])
         );
         if (prefixMatch) {
           defaultLang = LANGUAGE_MAPPING[prefixMatch];
         }
       }
-      // 如果没有匹配到，则使用默认语言
-      if (!SUPPORTED_LANGUAGES.includes(defaultLang)) {
-        defaultLang = import.meta.env.VITE_DEFAULT_LANG;; // 默认使用配置文件中的默认语言
-      }
-
-      localLang = defaultLang;
     }
-    setLocal("language", defaultLang);  // 设置本地语言
+    
+    // 确保是支持的语言，否则使用中文
+    if (!SUPPORTED_LANGUAGES.includes(defaultLang)) {
+      defaultLang = 'zh-cn';
+    }
+
+    localLang = defaultLang;
+    setLocal("language", defaultLang);  // 保存到本地存储
   }
   return localLang;
 }

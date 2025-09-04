@@ -1,5 +1,5 @@
 <template>
-	<view class="index">
+	<view class="index" :class="`theme-${themeStore.currentTheme}`">
 
 
 		<!-- 二级页面 -->
@@ -24,11 +24,33 @@
 		</view>
 
 		<!-- 底部导航栏 -->
-		<up-tabbar :value="currentTabbarIndex" @change="changeTabbar" :fixed="true" :placeholder="true"
-			:safeAreaInsetBottom="true">
-			<up-tabbar-item :text="t('tabbar.search')" icon="search" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.chat')" icon="chat" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.profile')" icon="account" @click="click1"></up-tabbar-item>
+		<up-tabbar 
+			:value="currentTabbarIndex" 
+			@change="changeTabbar" 
+			:fixed="true" 
+			:placeholder="true"
+			:safeAreaInsetBottom="true"
+			:bgColor="themeStore.currentTheme === 'dark' ? '#2d3748' : '#ffffff'"
+			:activeColor="themeStore.currentTheme === 'dark' ? '#63b3ed' : '#007aff'"
+			:inactiveColor="themeStore.currentTheme === 'dark' ? '#a0aec0' : '#999999'"
+			borderTop
+			:borderColor="themeStore.currentTheme === 'dark' ? '#4a5568' : '#e4e7ed'"
+		>
+			<up-tabbar-item 
+				:text="t('tabbar.search')" 
+				icon="search" 
+				@click="click1"
+			></up-tabbar-item>
+			<up-tabbar-item 
+				:text="t('tabbar.chat')" 
+				icon="chat" 
+				@click="click1"
+			></up-tabbar-item>
+			<up-tabbar-item 
+				:text="t('tabbar.profile')" 
+				icon="account" 
+				@click="click1"
+			></up-tabbar-item>
 		</up-tabbar>
 
 
@@ -53,7 +75,10 @@ import {
 	useUserStore
 } from '@/store/user'
 import { useI18n } from 'vue-i18n'
+import { useThemeStore } from '@/store/theme.js'
+
 const { t } = useI18n()
+const themeStore = useThemeStore()
 const globalStore = useGlobalOptionStore()
 const userStore = useUserStore()
 const currentTabbarIndex = ref(1) // 默认选中聊天页面
@@ -128,6 +153,7 @@ function click1() {
 </script>
 
 <style lang="scss" scoped>
+/* 浅色主题（默认） */
 .index {
 	width: 100%;
 	height: 100vh;
@@ -162,9 +188,66 @@ function click1() {
 	.icon-select {
 		color: #05C160;
 	}
-
-	/* 底部导航样式简化 */
 }
 
+/* 暗色主题 */
+.theme-dark .index {
+	.custom-tabbar-page {
+		background: #1a1a1a;
+	}
+	
+	.color-select-no {
+		color: #e2e8f0;
+		background-color: #2d3748;
+	}
+}
 
+/* 为 tabbar 添加额外的主题样式 */
+.theme-dark {
+	/* 确保 tabbar 在暗色主题下的样式 */
+	:deep(.u-tabbar) {
+		background-color: #2d3748 !important;
+		border-top: 1px solid #4a5568 !important;
+		box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3) !important;
+	}
+	
+	:deep(.u-tabbar-item__text) {
+		color: #a0aec0 !important;
+	}
+	
+	:deep(.u-tabbar-item--active .u-tabbar-item__text) {
+		color: #63b3ed !important;
+	}
+	
+	:deep(.u-tabbar-item__icon) {
+		color: #a0aec0 !important;
+	}
+	
+	:deep(.u-tabbar-item--active .u-tabbar-item__icon) {
+		color: #63b3ed !important;
+	}
+	
+	/* 适配uview-plus的新版本类名 */
+	:deep(.up-tabbar) {
+		background-color: #2d3748 !important;
+		border-top: 1px solid #4a5568 !important;
+		box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3) !important;
+	}
+	
+	:deep(.up-tabbar-item__text) {
+		color: #a0aec0 !important;
+	}
+	
+	:deep(.up-tabbar-item--active .up-tabbar-item__text) {
+		color: #63b3ed !important;
+	}
+	
+	:deep(.up-tabbar-item__icon) {
+		color: #a0aec0 !important;
+	}
+	
+	:deep(.up-tabbar-item--active .up-tabbar-item__icon) {
+		color: #63b3ed !important;
+	}
+}
 </style>

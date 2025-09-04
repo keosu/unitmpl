@@ -1,0 +1,74 @@
+/* 全局主题初始化样式 */
+
+/* H5页面根元素样式 */
+html {
+  background: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+html.theme-dark {
+  background: #1a1a1a;
+}
+
+/* UniApp 页面根元素 */
+page {
+  background: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+page.theme-dark {
+  background: #1a1a1a;
+}
+
+/* 应用根容器 */
+#app {
+  background: #f8f9fa;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+#app.theme-dark {
+  background: #1a1a1a;
+}
+
+/* UniApp 根容器 */
+uni-app {
+  background: #f8f9fa;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+uni-app.theme-dark {
+  background: #1a1a1a;
+}
+
+/* 页面容器通用样式 */
+.uni-page-wrapper {
+  background: inherit;
+}
+
+/* 确保所有页面都继承主题背景 */
+.theme-light {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.theme-dark {
+  background: #1a1a1a;
+  color: #e2e8f0;
+}
+
+/* 覆盖可能的白色背景 */
+.theme-dark .uni-page-body,
+.theme-dark .uni-page-wrapper,
+.theme-dark uni-page-body,
+.theme-dark uni-page-wrapper {
+  background: #1a1a1a !important;
+}
+
+.theme-light .uni-page-body,
+.theme-light .uni-page-wrapper,
+.theme-light uni-page-body,
+.theme-light uni-page-wrapper {
+  background: #f8f9fa !important;
+}

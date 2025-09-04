@@ -463,6 +463,7 @@ const selectHot = (item) => {
 </script>
 
 <style scoped>
+/* 浅色主题（默认） */
 .search-container {
 	min-height: 100vh;
 	background: #f8f9fa;
@@ -479,6 +480,54 @@ const selectHot = (item) => {
 	padding: 30rpx;
 	background: #fff;
 	margin-bottom: 20rpx;
+}
+
+/* 暗色主题 */
+.theme-dark .search-container {
+	background: #1a1a1a;
+}
+
+.theme-dark .search-header {
+	background: #2d3748;
+	border-bottom-color: #4a5568;
+}
+
+.theme-dark .filter-section {
+	background: #2d3748;
+}
+
+.theme-dark .filter-title,
+.theme-dark .history-title,
+.theme-dark .hot-title {
+	color: #e2e8f0;
+}
+
+.theme-dark .lawyer-card {
+	background: #2d3748;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .lawyer-name {
+	color: #e2e8f0;
+}
+
+.theme-dark .lawyer-title,
+.theme-dark .lawyer-firm,
+.theme-dark .specialty-label,
+.theme-dark .description-text {
+	color: #a0aec0;
+}
+
+.theme-dark .lawyer-stats {
+	background: #4a5568;
+}
+
+.theme-dark .stat-label {
+	color: #a0aec0;
+}
+
+.theme-dark .empty-text {
+	color: #a0aec0;
 }
 
 .filter-title {
@@ -768,39 +817,5 @@ const selectHot = (item) => {
 	color: #999;
 }
 
-/* 主题样式 */
-.theme-dark .search-container {
-	background: #1a1a1a;
-}
 
-.theme-dark .search-header {
-	background: #2a2a2a;
-	border-bottom-color: #333;
-}
-
-.theme-dark .search-input {
-	background: #333;
-}
-
-.theme-dark .search-text {
-	color: #fff;
-}
-
-.theme-dark .history-title,
-.theme-dark .hot-title,
-.theme-dark .result-title {
-	color: #fff;
-}
-
-.theme-dark .result-list {
-	background: #2a2a2a;
-}
-
-.theme-dark .result-item {
-	border-bottom-color: #333;
-}
-
-.theme-dark .result-name {
-	color: #fff;
-}
 </style>
