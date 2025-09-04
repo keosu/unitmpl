@@ -53,42 +53,69 @@
 		<!-- 主题切换 -->
 		<view class="theme-section">
 			<view class="section-title">{{ t('profile.theme') }}</view>
-			<view class="theme-options">
-				<view 
+			<up-row gutter="30">
+				<up-col 
 					v-for="theme in themeOptions" 
 					:key="theme.value"
-					class="theme-option"
-					:class="{ active: themeStore.currentTheme === theme.value }"
-					@click="switchTheme(theme.value)"
+					span="6"
 				>
-					<view class="theme-preview" :style="{ background: theme.color }"></view>
-					<text class="theme-name">{{ theme.name }}</text>
-				</view>
-			</view>
+					<up-button
+						:type="themeStore.currentTheme === theme.value ? 'primary' : 'info'"
+						:plain="themeStore.currentTheme !== theme.value"
+						size="default"
+						shape="round"
+						customStyle="width: 100%; margin-bottom: 20rpx;"
+						@click="switchTheme(theme.value)"
+					>
+						<view style="display: flex; flex-direction: column; align-items: center;">
+							<view 
+								class="theme-preview" 
+								:style="{ background: theme.color }"
+							></view>
+							<text class="theme-name">{{ theme.name }}</text>
+						</view>
+					</up-button>
+				</up-col>
+			</up-row>
 		</view>
 
 		<!-- 语言切换 -->
 		<view class="language-section">
 			<view class="section-title">{{ t('profile.language') }}</view>
-			<view class="language-options">
-				<view 
+			<up-row gutter="30">
+				<up-col 
 					v-for="lang in languageOptions" 
 					:key="lang.value"
-					class="language-option"
-					:class="{ active: currentLanguage === lang.value }"
-					@click="switchLanguage(lang.value)"
+					span="6"
 				>
-					<text class="language-flag">{{ lang.flag }}</text>
-					<text class="language-name">{{ lang.name }}</text>
-				</view>
-			</view>
+					<up-button
+						:type="currentLanguage === lang.value ? 'success' : 'info'"
+						:plain="currentLanguage !== lang.value"
+						size="default"
+						shape="round"
+						customStyle="width: 100%; margin-bottom: 20rpx;"
+						@click="switchLanguage(lang.value)"
+					>
+						<view style="display: flex; flex-direction: column; align-items: center;">
+							<text class="language-flag">{{ lang.flag }}</text>
+							<text class="language-name">{{ lang.name }}</text>
+						</view>
+					</up-button>
+				</up-col>
+			</up-row>
 		</view>
 
 		<!-- 退出按钮 -->
 		<view class="logout-section">
-			<button class="logout-btn" @click="handleLogout">
+			<up-button 
+				type="error"
+				size="large"
+				shape="round"
+				customStyle="width: 100%;"
+				@click="handleLogout"
+			>
 				{{ t('profile.logout') }}
-			</button>
+			</up-button>
 		</view>
 	</view>
 </template>
@@ -366,7 +393,7 @@ const handleLogout = () => {
 	display: block;
 	font-size: 48rpx;
 	font-weight: bold;
-	color: #333;
+	color: #007aff;
 	margin-bottom: 10rpx;
 }
 
@@ -519,14 +546,15 @@ const handleLogout = () => {
 
 /* 主题样式 */
 .theme-dark .profile-container {
-	background: #1a1a1a;
+	background: #f8f9fa;
 }
 
 .theme-dark .stats-section,
 .theme-dark .menu-group,
 .theme-dark .theme-section,
 .theme-dark .language-section {
-	background: #2a2a2a;
+	background: #fff;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .theme-dark .stat-number,
@@ -534,10 +562,14 @@ const handleLogout = () => {
 .theme-dark .section-title,
 .theme-dark .theme-name,
 .theme-dark .language-name {
-	color: #fff;
+	color: #333;
+}
+
+.theme-dark .stat-number {
+	color: #007aff;
 }
 
 .theme-dark .menu-item {
-	border-bottom-color: #333;
+	border-bottom-color: #f0f0f0;
 }
 </style>

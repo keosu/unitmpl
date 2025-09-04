@@ -21,17 +21,20 @@
         "theme_switched": "主题切换成功"
     },
     "search": {
-        "placeholder": "搜索内容...",
+        "placeholder": "搜索律师或专业领域...",
         "history": "搜索历史",
         "clear": "清空",
         "hot": "热门搜索",
         "results": "搜索结果",
         "no_results": "暂无搜索结果",
-        "hot_1": "热门话题",
-        "hot_2": "新品推荐",
-        "hot_3": "特价优惠",
-        "hot_4": "品牌精选",
-        "hot_5": "限时秒杀"
+        "no_lawyers": "暂无律师信息",
+        "filter_title": "筛选条件",
+        "clear_filters": "清除筛选",
+        "hot_1": "刑事辩护",
+        "hot_2": "婚姻继承",
+        "hot_3": "合同纠纷",
+        "hot_4": "交通事故",
+        "hot_5": "知识产权"
     },
     "chat": {
         "title": "AI 助手",

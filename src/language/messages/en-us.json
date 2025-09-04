@@ -21,17 +21,20 @@
         "theme_switched": "Theme switched successfully"
     },
     "search": {
-        "placeholder": "Search content...",
+        "placeholder": "Search lawyers or specialties...",
         "history": "Search History",
         "clear": "Clear",
         "hot": "Hot Searches",
         "results": "Search Results",
         "no_results": "No search results",
-        "hot_1": "Hot Topics",
-        "hot_2": "New Recommendations",
-        "hot_3": "Special Offers",
-        "hot_4": "Brand Selection",
-        "hot_5": "Flash Sale"
+        "no_lawyers": "No lawyers found",
+        "filter_title": "Filter Options",
+        "clear_filters": "Clear Filters",
+        "hot_1": "Criminal Defense",
+        "hot_2": "Family Law",
+        "hot_3": "Contract Disputes",
+        "hot_4": "Traffic Accidents",
+        "hot_5": "Intellectual Property"
     },
     "chat": {
         "title": "AI Assistant",

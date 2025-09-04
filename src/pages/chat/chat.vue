@@ -54,22 +54,28 @@
 		<!-- 输入区域 -->
 		<view class="input-area">
 			<view class="input-container">
-				<view class="input-wrapper">
-					<textarea 
-						v-model="inputText"
-						:placeholder="t('chat.input_placeholder')"
-						class="input-text"
-						:maxlength="500"
-						:auto-height="true"
-						:show-confirm-bar="false"
-						@input="onInput"
-						@confirm="sendMessage"
-					/>
-					<text class="char-count">{{ inputText.length }}/500</text>
-				</view>
-				<view class="send-btn" :class="{ active: canSend }" @click="sendMessage">
-					<text class="send-icon">✈️</text>
-				</view>
+				<up-input 
+					v-model="inputText"
+					:placeholder="t('chat.input_placeholder')"
+					type="textarea"
+					:maxlength="500"
+					:autoHeight="true"
+					:showConfirmBar="false"
+					border="none"
+					customStyle="flex: 1; background: #f5f5f5; border-radius: 40rpx; padding: 20rpx 30rpx;"
+					@confirm="sendMessage"
+				></up-input>
+				<text class="char-count">{{ inputText.length }}/500</text>
+				<up-button 
+					:disabled="!canSend"
+					type="primary"
+					shape="circle"
+					size="default"
+					customStyle="width: 80rpx; height: 80rpx; margin-left: 20rpx;"
+					@click="sendMessage"
+				>
+					<up-icon name="arrow-right" color="white" size="36"></up-icon>
+				</up-button>
 			</view>
 		</view>
 	</view>
@@ -383,12 +389,12 @@ const showSettings = () => {
 
 /* 主题样式 */
 .theme-dark .chat-container {
-	background: #1a1a1a;
+	background: #f8f9fa;
 }
 
 .theme-dark .chat-header {
-	background: #2a2a2a;
-	border-bottom-color: #333;
+	background: #667eea;
+	border-bottom-color: #5a6fd8;
 }
 
 .theme-dark .chat-title {
@@ -396,28 +402,30 @@ const showSettings = () => {
 }
 
 .theme-dark .message-bubble.received {
-	background: #2a2a2a;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .theme-dark .message-bubble.received .message-text {
-	color: #fff;
+	color: #333;
 }
 
 .theme-dark .typing-bubble {
-	background: #2a2a2a;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .theme-dark .input-area {
-	background: #2a2a2a;
-	border-top-color: #333;
-	box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.1);
+	background: #fff;
+	border-top-color: #eee;
+	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .theme-dark .input-wrapper {
-	background: #333;
+	background: #f5f5f5;
 }
 
 .theme-dark .input-text {
-	color: #fff;
+	color: #333;
 }
 </style>

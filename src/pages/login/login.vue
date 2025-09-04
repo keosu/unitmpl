@@ -231,184 +231,197 @@ const showPrivacy = () => {
 		<!-- 登录表单 -->
 		<view class="form-section">
 			<!-- 登录方式切换 -->
-			<view class="login-tabs">
-				<view 
-					v-for="(tab, index) in loginTabs" 
-					:key="index"
-					class="tab-item"
-					:class="{ active: currentTab === index }"
-					@click="switchTab(index)"
-				>
-					{{ tab.title }}
-				</view>
-			</view>
+			<up-subsection 
+				:list="loginTabs.map(tab => tab.title)"
+				:current="currentTab"
+				@change="switchTab"
+				mode="button"
+				activeColor="#667eea"
+				bgColor="#f5f5f5"
+				customStyle="margin-bottom: 60rpx;"
+			></up-subsection>
 
 			<!-- 密码登录 -->
 			<view v-if="currentTab === 0" class="form-content">
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">👤</text>
-						<input 
+				<up-form 
+					:model="loginForm"
+					labelPosition="left"
+					labelWidth="0"
+				>
+					<up-form-item>
+						<up-input 
 							v-model="loginForm.username"
-							type="text" 
 							:placeholder="t('login.username_placeholder')"
-							class="form-input"
 							maxlength="20"
-						/>
-					</view>
-				</view>
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">🔒</text>
-						<input 
+							prefixIcon="account"
+							border="bottom"
+							customStyle="margin-bottom: 30rpx;"
+						></up-input>
+					</up-form-item>
+					<up-form-item>
+						<up-input 
 							v-model="loginForm.password"
-							:type="showPassword ? 'text' : 'password'"
 							:placeholder="t('login.password_placeholder')"
-							class="form-input"
+							:type="showPassword ? 'text' : 'password'"
 							maxlength="20"
-						/>
-						<text 
-							class="password-toggle"
-							@click="showPassword = !showPassword"
-						>
-							{{ showPassword ? '🙈' : '👁️' }}
-						</text>
-					</view>
-				</view>
-				<button 
-					class="login-btn"
-					:class="{ disabled: !canPasswordLogin }"
+							prefixIcon="lock"
+							:suffixIcon="showPassword ? 'eye-off' : 'eye'"
+							border="bottom"
+							customStyle="margin-bottom: 40rpx;"
+							@clickSuffixIcon="showPassword = !showPassword"
+						></up-input>
+					</up-form-item>
+				</up-form>
+				<up-button 
+					type="primary"
+					size="large"
+					shape="round"
 					:disabled="!canPasswordLogin"
+					customStyle="width: 100%; background: #667eea;"
 					@click="handlePasswordLogin"
 				>
 					{{ t('login.login') }}
-				</button>
+				</up-button>
 			</view>
 
 			<!-- 手机登录 -->
 			<view v-if="currentTab === 1" class="form-content">
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">📱</text>
-						<input 
+				<up-form 
+					:model="phoneForm"
+					labelPosition="left"
+					labelWidth="0"
+				>
+					<up-form-item>
+						<up-input 
 							v-model="phoneForm.phone"
-							type="number" 
 							:placeholder="t('login.phone_placeholder')"
-							class="form-input"
+							type="number"
 							maxlength="11"
-						/>
-					</view>
-				</view>
-				<view class="input-group">
-					<view class="input-wrapper code-wrapper">
-						<text class="input-icon">💬</text>
-						<input 
-							v-model="phoneForm.code"
-							type="number" 
-							:placeholder="t('login.code_placeholder')"
-							class="form-input"
-							maxlength="6"
-						/>
-						<button 
-							class="code-btn"
-							:class="{ disabled: !canSendCode }"
-							:disabled="!canSendCode"
-							@click="sendSmsCode"
-						>
-							{{ countdown > 0 ? `${countdown}s` : t('login.send_code') }}
-						</button>
-					</view>
-				</view>
-				<button 
-					class="login-btn"
-					:class="{ disabled: !canPhoneLogin }"
+							prefixIcon="phone"
+							border="bottom"
+							customStyle="margin-bottom: 30rpx;"
+						></up-input>
+					</up-form-item>
+					<up-form-item>
+						<view style="display: flex; gap: 20rpx; align-items: center;">
+							<up-input 
+								v-model="phoneForm.code"
+								:placeholder="t('login.code_placeholder')"
+								type="number"
+								maxlength="6"
+								prefixIcon="chat"
+								border="bottom"
+								customStyle="flex: 1;"
+							></up-input>
+							<up-button 
+								type="info"
+								size="default"
+								shape="round"
+								:disabled="!canSendCode"
+								@click="sendSmsCode"
+								customStyle="width: 160rpx;"
+							>
+								{{ countdown > 0 ? `${countdown}s` : t('login.send_code') }}
+							</up-button>
+						</view>
+					</up-form-item>
+				</up-form>
+				<up-button 
+					type="primary"
+					size="large"
+					shape="round"
 					:disabled="!canPhoneLogin"
+					customStyle="width: 100%; background: #667eea; margin-top: 40rpx;"
 					@click="handlePhoneLogin"
 				>
 					{{ t('login.login') }}
-				</button>
+				</up-button>
 			</view>
 
 			<!-- 注册表单 -->
 			<view v-if="currentTab === 2" class="form-content">
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">👤</text>
-						<input 
+				<up-form 
+					:model="registerForm"
+					labelPosition="left"
+					labelWidth="0"
+				>
+					<up-form-item>
+						<up-input 
 							v-model="registerForm.username"
-							type="text" 
 							:placeholder="t('login.username_placeholder')"
-							class="form-input"
 							maxlength="20"
-						/>
-					</view>
-				</view>
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">📱</text>
-						<input 
+							prefixIcon="account"
+							border="bottom"
+							customStyle="margin-bottom: 30rpx;"
+						></up-input>
+					</up-form-item>
+					<up-form-item>
+						<up-input 
 							v-model="registerForm.phone"
-							type="number" 
 							:placeholder="t('login.phone_placeholder')"
-							class="form-input"
+							type="number"
 							maxlength="11"
-						/>
-					</view>
-				</view>
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">🔒</text>
-						<input 
+							prefixIcon="phone"
+							border="bottom"
+							customStyle="margin-bottom: 30rpx;"
+						></up-input>
+					</up-form-item>
+					<up-form-item>
+						<up-input 
 							v-model="registerForm.password"
-							:type="showRegPassword ? 'text' : 'password'"
 							:placeholder="t('login.password_placeholder')"
-							class="form-input"
+							:type="showRegPassword ? 'text' : 'password'"
 							maxlength="20"
-						/>
-						<text 
-							class="password-toggle"
-							@click="showRegPassword = !showRegPassword"
-						>
-							{{ showRegPassword ? '🙈' : '👁️' }}
-						</text>
-					</view>
-				</view>
-				<view class="input-group">
-					<view class="input-wrapper">
-						<text class="input-icon">😊</text>
-						<input 
+							prefixIcon="lock"
+							:suffixIcon="showRegPassword ? 'eye-off' : 'eye'"
+							border="bottom"
+							customStyle="margin-bottom: 30rpx;"
+							@clickSuffixIcon="showRegPassword = !showRegPassword"
+						></up-input>
+					</up-form-item>
+					<up-form-item>
+						<up-input 
 							v-model="registerForm.nickname"
-							type="text" 
 							:placeholder="t('login.nickname_placeholder')"
-							class="form-input"
 							maxlength="20"
-						/>
-					</view>
-				</view>
-				<button 
-					class="login-btn register-btn"
-					:class="{ disabled: !canRegister }"
+							prefixIcon="smile"
+							border="bottom"
+							customStyle="margin-bottom: 40rpx;"
+						></up-input>
+					</up-form-item>
+				</up-form>
+				<up-button 
+					type="success"
+					size="large"
+					shape="round"
 					:disabled="!canRegister"
+					customStyle="width: 100%;"
 					@click="handleRegister"
 				>
 					{{ t('login.register') }}
-				</button>
+				</up-button>
 			</view>
 		</view>
 
 		<!-- 第三方登录 -->
 		<view class="social-login">
-			<view class="divider">
-				<text class="divider-text">{{ t('login.or') }}</text>
-			</view>
+			<up-divider 
+				:text="t('login.or')"
+				textColor="rgba(255,255,255,0.8)"
+				lineColor="rgba(255,255,255,0.3)"
+				customStyle="margin: 40rpx 0;"
+			></up-divider>
 			<view class="social-buttons">
-				<button 
-					class="social-btn wechat-btn"
+				<up-button 
+					type="success"
+					size="large"
+					shape="round"
+					customStyle="background: #07c160; width: 100%;"
 					@click="handleWechatLogin"
 				>
-					<text class="social-icon">💬</text>
-					<text class="social-text">{{ t('login.wechat_login') }}</text>
-				</button>
+					<up-icon name="weixin" color="white" size="36" customStyle="margin-right: 15rpx;"></up-icon>
+					{{ t('login.wechat_login') }}
+				</up-button>
 			</view>
 		</view>
 
