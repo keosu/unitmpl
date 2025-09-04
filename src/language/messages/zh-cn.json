@@ -99,11 +99,9 @@
         "language_switched": "语言切换成功"
     },
     "tabbar": {
-        "home": "首页",
-        "category": "分类",
-        "publish": "发布",
-        "statistics": "统计",
-        "my": "我的"
+        "search": "搜索",
+        "chat": "聊天",
+        "profile": "我的"
     },
     "theme": {
         "title": "主题设置",
@@ -115,5 +113,54 @@
         "dark_desc": "护眼舒适的暗色界面",
         "auto_desc": "自动跟随系统设置",
         "theme_switched": "主题切换成功"
+    },
+    "search": {
+        "placeholder": "搜索内容...",
+        "history": "搜索历史",
+        "clear": "清空",
+        "hot": "热门搜索",
+        "results": "搜索结果",
+        "no_results": "暂无搜索结果",
+        "hot_1": "热门话题",
+        "hot_2": "新品推荐",
+        "hot_3": "特价优惠",
+        "hot_4": "品牌精选",
+        "hot_5": "限时秒杀"
+    },
+    "chat": {
+        "title": "AI 助手",
+        "input_placeholder": "请输入您的消息...",
+        "welcome": "您好！我是您的AI助手，有什么可以帮助您的吗？",
+        "reply_1": "谢谢您的提问，我会尽力帮助您。",
+        "reply_2": "这是一个很好的问题，让我来为您解答。",
+        "reply_3": "我理解您的意思，这里有一些建议。",
+        "reply_4": "这确实是一个值得探讨的话题。",
+        "reply_5": "希望我的回答对您有帮助！",
+        "settings": "设置"
+    },
+    "profile": {
+        "user_desc": "普通用户",
+        "messages": "消息",
+        "friends": "好友",
+        "points": "积分",
+        "edit_profile": "编辑资料",
+        "notifications": "消息通知",
+        "privacy": "隐私设置",
+        "favorites": "我的收藏",
+        "downloads": "下载管理",
+        "statistics": "数据统计",
+        "help": "帮助中心",
+        "feedback": "意见反馈",
+        "about": "关于我们",
+        "theme": "主题设置",
+        "theme_light": "浅色主题",
+        "theme_dark": "暗色主题",
+        "language": "语言设置",
+        "logout": "退出登录",
+        "avatar_updated": "头像更新成功",
+        "theme_switched": "主题切换成功",
+        "language_switched": "语言切换成功",
+        "logout_confirm": "确认退出",
+        "logout_message": "您确定要退出登录吗？"
     }
 }

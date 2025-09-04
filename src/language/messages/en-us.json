@@ -99,11 +99,9 @@
         "language_switched": "Language switched successfully"
     },
     "tabbar": {
-        "home": "Home",
-        "category": "Category",
-        "publish": "Publish",
-        "statistics": "Statistics",
-        "my": "My"
+        "search": "Search",
+        "chat": "Chat",
+        "profile": "Profile"
     },
     "theme": {
         "title": "Theme Settings",
@@ -115,5 +113,54 @@
         "dark_desc": "Eye-friendly dark interface",
         "auto_desc": "Automatically follow system settings",
         "theme_switched": "Theme switched successfully"
+    },
+    "search": {
+        "placeholder": "Search content...",
+        "history": "Search History",
+        "clear": "Clear",
+        "hot": "Hot Searches",
+        "results": "Search Results",
+        "no_results": "No search results",
+        "hot_1": "Hot Topics",
+        "hot_2": "New Recommendations",
+        "hot_3": "Special Offers",
+        "hot_4": "Brand Selection",
+        "hot_5": "Flash Sale"
+    },
+    "chat": {
+        "title": "AI Assistant",
+        "input_placeholder": "Type your message...",
+        "welcome": "Hello! I'm your AI assistant. How can I help you today?",
+        "reply_1": "Thank you for your question, I'll do my best to help you.",
+        "reply_2": "That's a great question, let me answer that for you.",
+        "reply_3": "I understand what you mean, here are some suggestions.",
+        "reply_4": "This is indeed a topic worth discussing.",
+        "reply_5": "I hope my answer is helpful to you!",
+        "settings": "Settings"
+    },
+    "profile": {
+        "user_desc": "Regular User",
+        "messages": "Messages",
+        "friends": "Friends",
+        "points": "Points",
+        "edit_profile": "Edit Profile",
+        "notifications": "Notifications",
+        "privacy": "Privacy Settings",
+        "favorites": "My Favorites",
+        "downloads": "Download Manager",
+        "statistics": "Data Statistics",
+        "help": "Help Center",
+        "feedback": "Feedback",
+        "about": "About Us",
+        "theme": "Theme Settings",
+        "theme_light": "Light Theme",
+        "theme_dark": "Dark Theme",
+        "language": "Language Settings",
+        "logout": "Logout",
+        "avatar_updated": "Avatar updated successfully",
+        "theme_switched": "Theme switched successfully",
+        "language_switched": "Language switched successfully",
+        "logout_confirm": "Confirm Logout",
+        "logout_message": "Are you sure you want to logout?"
     }
 }

@@ -7,46 +7,30 @@
 			display: currentTabbarIndex === 0 ? '' : 'none'
 		}">
 			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<homePage></homePage>
+				<searchPage></searchPage>
 			</scroll-view>
 		</view>
 		<view v-if="tabberPageLoadFlag[1]" :style="{
 			display: currentTabbarIndex === 1 ? '' : 'none'
 		}">
 			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<orderPage ref="order"></orderPage>
+				<chatPage ref="chat"></chatPage>
 			</scroll-view>
 		</view>
 		<view v-if="tabberPageLoadFlag[2]" :style="{
 			display: currentTabbarIndex === 2 ? '' : 'none'
 		}">
 			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<productPage ref="product"></productPage>
-			</scroll-view>
-		</view>
-		<view v-if="tabberPageLoadFlag[3]" :style="{
-			display: currentTabbarIndex === 3 ? '' : 'none'
-		}">
-			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<servicePage ref="service"></servicePage>
-			</scroll-view>
-		</view>
-		<view v-if="tabberPageLoadFlag[4]" :style="{
-			display: currentTabbarIndex === 4 ? '' : 'none'
-		}">
-			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<myPage ref="my"></myPage>
+				<profilePage ref="profile"></profilePage>
 			</scroll-view>
 		</view>
 
 		<!-- 底部导航栏 -->
 		<up-tabbar :value="value1" @change="changeTabbar" :fixed="true" :placeholder="false"
 			:safeAreaInsetBottom="false">
-			<up-tabbar-item :text="t('tabbar.home')" icon="home" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.category')" icon="photo" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.publish')" icon="play-right" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.statistics')" icon="play-right" @click="click1"></up-tabbar-item>
-			<up-tabbar-item :text="t('tabbar.my')" icon="account" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.search')" icon="search" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.chat')" icon="chat" @click="click1"></up-tabbar-item>
+			<up-tabbar-item :text="t('tabbar.profile')" icon="account" @click="click1"></up-tabbar-item>
 		</up-tabbar>
 
 
@@ -54,11 +38,9 @@
 </template>
 
 <script setup>
-import homePage from '@/pages/home/home.vue'
-import orderPage from '@/pages/order/order.vue'
-import productPage from '@/pages/product/product.vue'
-import servicePage from '@/pages/service/service.vue'
-import myPage from '@/pages/my/my.vue'
+import searchPage from '@/pages/search/search.vue'
+import chatPage from '@/pages/chat/chat.vue'
+import profilePage from '@/pages/profile/profile.vue'
 import {
 	ref,
 	computed
@@ -76,17 +58,15 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 // 定义tabbar标题列表
 const tabbarTitleList = computed(() => [
-	t('tabbar.home'),
-	t('tabbar.category'),
-	t('tabbar.publish'),
-	t('tabbar.statistics'),
-	t('tabbar.my')
+	t('tabbar.search'),
+	t('tabbar.chat'),
+	t('tabbar.profile')
 ])
 
 onLoad((options) => {
 	const index = Number(options.index || 0)
 	// 根据底部tabbar菜单列表设置对应页面的加载情况
-	for (let i = 0; i < 5; i++) {
+	for (let i = 0; i < 3; i++) {
 		tabberPageLoadFlag.value.push(i === index)
 	}
 	changeTabbar(index)
