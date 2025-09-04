@@ -92,7 +92,12 @@
 		</view>
 
 		<!-- 律师列表 -->
-		<view v-if="displayLawyers.length > 0" class="lawyers-list">
+		<view v-if="isLoading" class="loading-container">
+			<up-loading-icon :show="true" mode="circle" size="60"></up-loading-icon>
+			<text class="loading-text">正在加载...</text>
+		</view>
+		
+		<view v-else-if="displayLawyers.length > 0" class="lawyers-list">
 			<view 
 				v-for="lawyer in displayLawyers" 
 				:key="lawyer.id"
@@ -171,7 +176,7 @@
 		</view>
 
 		<!-- 空状态 -->
-		<view v-if="displayLawyers.length === 0" class="empty-state">
+		<view v-if="!isLoading && displayLawyers.length === 0" class="empty-state">
 			<up-empty 
 				mode="search"
 				:text="searchKeyword ? t('search.no_results') : t('search.no_lawyers')"
@@ -189,13 +194,14 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
 import { useUserStore } from '@/store/user.js'
 import { getLocal, setLocal } from '@/utils/localStorage.js'
+import { lawyerAPI } from '@/api/lawyerService.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
 const userStore = useUserStore()
 
 // 检查登录状态
-onMounted(() => {
+onMounted(async () => {
 	if (!userStore.isLoggedIn) {
 		uni.showToast({
 			title: t('common.login_required'),
@@ -209,11 +215,62 @@ onMounted(() => {
 		}, 1500)
 		return
 	}
+	
+	// 加载初始数据
+	await loadInitialData()
 })
+
+/**
+ * 加载初始数据
+ */
+const loadInitialData = async () => {
+	isLoading.value = true
+	try {
+		// 并行加载律师数据和筛选选项
+		const [lawyersResult, filtersResult] = await Promise.all([
+			lawyerAPI.getAllLawyers(),
+			lawyerAPI.getFilterOptions()
+		])
+		
+		if (lawyersResult.success) {
+			lawyers.value = lawyersResult.data
+		} else {
+			uni.showToast({
+				title: lawyersResult.message || '获取律师数据失败',
+				icon: 'error'
+			})
+		}
+		
+		if (filtersResult.success) {
+			// 合并所有筛选选项
+			filterOptions.value = [
+				...filtersResult.data.specialtyTypes,
+				...filtersResult.data.locations,
+				...filtersResult.data.priceRanges
+			]
+		} else {
+			uni.showToast({
+				title: filtersResult.message || '获取筛选选项失败',
+				icon: 'error'
+			})
+		}
+	} catch (error) {
+		console.error('加载数据失败:', error)
+		uni.showToast({
+			title: '网络错误，请稍后重试',
+			icon: 'error'
+		})
+	} finally {
+		isLoading.value = false
+	}
+}
 
 const searchKeyword = ref('')
 const searchHistory = ref(getLocal('searchHistory') || [])
 const selectedFilters = ref({})
+const isLoading = ref(false)
+const lawyers = ref([])
+const filterOptions = ref([])
 
 // 热门搜索关键词
 const hotKeywords = ref([
@@ -226,120 +283,8 @@ const hotKeywords = ref([
 	'房产纠纷'
 ])
 
-// 模拟律师数据
-const mockLawyers = ref([
-	{
-		id: 1,
-		name: '张维权',
-		title: '高级合伙人',
-		firm: '大成律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=1',
-		rating: 4.8,
-		experience: 15,
-		cases: 128,
-		hourlyRate: 800,
-		specialties: ['刑事辩护', '合同纠纷', '公司法务'],
-		description: '擅长复杂商事诉讼和刑事辩护，具有5年专业经验，年均办案200+件。',
-		specialtyType: '刑事',
-		location: '北京',
-		priceRange: 'high'
-	},
-	{
-		id: 2,
-		name: '李明浩',
-		title: '主任律师',
-		firm: '金杜律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=2',
-		rating: 4.6,
-		experience: 12,
-		cases: 95,
-		hourlyRate: 600,
-		specialties: ['婚姻继承', '房产纠纷', '劳动争议'],
-		description: '专注婚姻家庭法律服务，在离婚财产分割、子女抚养等领域经验丰富。',
-		specialtyType: '民事',
-		location: '上海',
-		priceRange: 'medium'
-	},
-	{
-		id: 3,
-		name: '王佳慧',
-		title: '合伙人律师',
-		firm: '华诚律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=3',
-		rating: 4.9,
-		experience: 18,
-		cases: 156,
-		hourlyRate: 1000,
-		specialties: ['知识产权', '投融资', '公司并购'],
-		description: '专业知识产权律师，曾代理多起重大专利侵权案件，获得客户一致好评。',
-		specialtyType: '知识产权',
-		location: '深圳',
-		priceRange: 'high'
-	},
-	{
-		id: 4,
-		name: '陈宇轩',
-		title: '主办律师',
-		firm: '鹏华律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=4',
-		rating: 4.5,
-		experience: 8,
-		cases: 67,
-		hourlyRate: 400,
-		specialties: ['交通事故', '人身损害', '保险理赔'],
-		description: '专业处理交通事故理赔案件，在人身损害赔偿方面有着丰富经验。',
-		specialtyType: '交通事故',
-		location: '广州',
-		priceRange: 'low'
-	},
-	{
-		id: 5,
-		name: '刘妍宇',
-		title: '高级律师',
-		firm: '德恒律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=5',
-		rating: 4.7,
-		experience: 20,
-		cases: 189,
-		hourlyRate: 900,
-		specialties: ['建设工程', '房地产', '政府采购'],
-		description: '在建设工程和房地产法律服务领域有着深入的专业知识和丰富实践。',
-		specialtyType: '房地产',
-		location: '成都',
-		priceRange: 'high'
-	},
-	{
-		id: 6,
-		name: '许雅文',
-		title: '初级律师',
-		firm: '星辉律师事务所',
-		avatar: 'https://picsum.photos/120/120?random=6',
-		rating: 4.3,
-		experience: 5,
-		cases: 34,
-		hourlyRate: 300,
-		specialties: ['劳动争议', '合同纠纷', '消费维权'],
-		description: '新锐律师，专注于劳动法和消费者权益保护，服务态度认真负责。',
-		specialtyType: '劳动法',
-		location: '杭州',
-		priceRange: 'low'
-	}
-])
-
-// 筛选选项
-const filterOptions = computed(() => [
-	{ key: 'specialtyType', value: '刑事', label: '刑事辩护' },
-	{ key: 'specialtyType', value: '民事', label: '民事纠纷' },
-	{ key: 'specialtyType', value: '知识产权', label: '知识产权' },
-	{ key: 'specialtyType', value: '交通事故', label: '交通事故' },
-	{ key: 'location', value: '北京', label: '北京' },
-	{ key: 'location', value: '上海', label: '上海' },
-	{ key: 'location', value: '深圳', label: '深圳' },
-	{ key: 'location', value: '广州', label: '广州' },
-	{ key: 'priceRange', value: 'low', label: '低价位' },
-	{ key: 'priceRange', value: 'medium', label: '中价位' },
-	{ key: 'priceRange', value: 'high', label: '高价位' }
-])
+// 筛选选项（现在从API获取）
+// const filterOptions = computed(() => [...]) 已经通过ref定义
 
 // 计算属性
 const hasActiveFilters = computed(() => 
@@ -347,33 +292,12 @@ const hasActiveFilters = computed(() =>
 )
 
 const displayLawyers = computed(() => {
-	let filtered = mockLawyers.value
-	
-	// 按筛选条件过滤
-	if (hasActiveFilters.value) {
-		filtered = filtered.filter(lawyer => {
-			return Object.entries(selectedFilters.value).every(([key, value]) => {
-				return lawyer[key] === value
-			})
-		})
-	}
-	
-	// 按搜索关键词过滤
-	if (searchKeyword.value.trim()) {
-		const keyword = searchKeyword.value.toLowerCase()
-		filtered = filtered.filter(lawyer => 
-			lawyer.name.toLowerCase().includes(keyword) ||
-			lawyer.firm.toLowerCase().includes(keyword) ||
-			lawyer.specialties.some(s => s.toLowerCase().includes(keyword)) ||
-			lawyer.description.toLowerCase().includes(keyword)
-		)
-	}
-	
-	return filtered
+	// 现在筛选和搜索都在API层面处理，直接返回结果
+	return lawyers.value
 })
 
 // 方法
-const toggleFilter = (key, value) => {
+const toggleFilter = async (key, value) => {
 	if (selectedFilters.value[key] === value) {
 		// 如果已经选中，则取消选中
 		delete selectedFilters.value[key]
@@ -381,10 +305,37 @@ const toggleFilter = (key, value) => {
 		// 否则设置新值
 		selectedFilters.value[key] = value
 	}
+	// 筛选条件改变时重新搜索
+	await applyFilters()
 }
 
-const clearFilters = () => {
+const clearFilters = async () => {
 	selectedFilters.value = {}
+	// 清除筛选时重新加载所有数据
+	await loadAllLawyers()
+}
+
+/**
+ * 应用筛选条件
+ */
+const applyFilters = async () => {
+	isLoading.value = true
+	try {
+		const result = await lawyerAPI.searchLawyers({
+			keyword: searchKeyword.value,
+			filters: selectedFilters.value,
+			page: 1,
+			pageSize: 50
+		})
+		
+		if (result.success) {
+			lawyers.value = result.data.list
+		}
+	} catch (error) {
+		console.error('应用筛选失败:', error)
+	} finally {
+		isLoading.value = false
+	}
 }
 
 const viewLawyer = (lawyer) => {
@@ -419,14 +370,66 @@ const callLawyer = (lawyer) => {
 	})
 }
 
-const handleSearch = () => {
+const handleSearch = async () => {
 	if (searchKeyword.value.trim()) {
 		addToHistory(searchKeyword.value)
+		await searchLawyers()
 	}
 }
 
-const clearSearch = () => {
+/**
+ * 搜索律师
+ */
+const searchLawyers = async () => {
+	isLoading.value = true
+	try {
+		const result = await lawyerAPI.searchLawyers({
+			keyword: searchKeyword.value,
+			filters: selectedFilters.value,
+			page: 1,
+			pageSize: 50 // 暂时不做分页
+		})
+		
+		if (result.success) {
+			lawyers.value = result.data.list
+		} else {
+			uni.showToast({
+				title: result.message || '搜索失败',
+				icon: 'error'
+			})
+		}
+	} catch (error) {
+		console.error('搜索失败:', error)
+		uni.showToast({
+			title: '网络错误，请稍后重试',
+			icon: 'error'
+		})
+	} finally {
+		isLoading.value = false
+	}
+}
+
+const clearSearch = async () => {
 	searchKeyword.value = ''
+	// 清除搜索时重新加载所有律师数据
+	await loadAllLawyers()
+}
+
+/**
+ * 加载所有律师数据
+ */
+const loadAllLawyers = async () => {
+	isLoading.value = true
+	try {
+		const result = await lawyerAPI.getAllLawyers()
+		if (result.success) {
+			lawyers.value = result.data
+		}
+	} catch (error) {
+		console.error('加载律师数据失败:', error)
+	} finally {
+		isLoading.value = false
+	}
 }
 
 const addToHistory = (keyword) => {
@@ -492,6 +495,20 @@ const selectHot = (item) => {
 
 .lawyers-list {
 	padding: 0 30rpx;
+}
+
+.loading-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 120rpx 20rpx;
+}
+
+.loading-text {
+	font-size: 28rpx;
+	color: #999;
+	margin-top: 30rpx;
 }
 
 .lawyer-card {
