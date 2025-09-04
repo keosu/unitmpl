@@ -83,13 +83,32 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
+import { useUserStore } from '@/store/user.js'
 import { getLocal, setLocal } from '@/utils/localStorage.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
+const userStore = useUserStore()
+
+// 检查登录状态
+onMounted(() => {
+	if (!userStore.isLoggedIn) {
+		uni.showToast({
+			title: t('common.login_required'),
+			icon: 'none'
+		})
+		
+		setTimeout(() => {
+			uni.navigateBack({
+				delta: 1
+			})
+		}, 1500)
+		return
+	}
+})
 
 const searchKeyword = ref('')
 const searchHistory = ref(getLocal('searchHistory') || [])

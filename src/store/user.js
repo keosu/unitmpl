@@ -94,10 +94,24 @@ export const useUserStore = defineStore('user', () => {
       
       // 跳转到首页
       setTimeout(() => {
-        uni.switchTab({ url: '/pages/home/home' })
+        uni.reLaunch({ url: '/pages/index/index?index=1' }) // 跳转到聊天页面
       }, 1000)
     } catch (error) {
       console.error('登出失败:', error)
+    }
+  }
+
+  function setUserInfo(userInfo) {
+    try {
+      token.value = userInfo.token
+      setToken(userInfo.token)
+      user.value = userInfo.user
+      setUser(userInfo.user)
+      
+      return Promise.resolve(userInfo)
+    } catch (error) {
+      console.error('设置用户信息失败:', error)
+      return Promise.reject(error)
     }
   }
 
@@ -108,6 +122,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     login,
     logout,
+    setUserInfo,
     getTokenHandle
   }
 })

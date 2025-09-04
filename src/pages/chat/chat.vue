@@ -45,11 +45,7 @@
 						<text class="avatar-text">🤖</text>
 					</view>
 					<view class="typing-bubble">
-						<view class="typing-dots">
-							<view class="dot"></view>
-							<view class="dot"></view>
-							<view class="dot"></view>
-						</view>
+						<text class="typing-text">正在输入...</text>
 					</view>
 				</view>
 			</view>
@@ -294,36 +290,9 @@ const showSettings = () => {
 	border-bottom-left-radius: 6px;
 }
 
-.typing-dots {
-	display: flex;
-	gap: 4px;
-}
-
-.dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #ccc;
-	animation: typing 1.4s infinite ease-in-out;
-}
-
-.dot:nth-child(1) {
-	animation-delay: -0.32s;
-}
-
-.dot:nth-child(2) {
-	animation-delay: -0.16s;
-}
-
-@keyframes typing {
-	0%, 80%, 100% {
-		transform: scale(0.8);
-		opacity: 0.5;
-	}
-	40% {
-		transform: scale(1);
-		opacity: 1;
-	}
+.typing-text {
+	font-size: 14px;
+	color: #999;
 }
 
 .input-area {
