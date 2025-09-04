@@ -12,10 +12,8 @@
 		</view>
 		<view v-if="tabberPageLoadFlag[1]" :style="{
 			display: currentTabbarIndex === 1 ? '' : 'none'
-		}">
-			<scroll-view class="custom-tabbar-page" scroll-y enable-back-to-top @scrolltolower="tabbarPageScrollLower">
-				<chatPage ref="chat"></chatPage>
-			</scroll-view>
+		}" class="chat-page-wrapper">
+			<chatPage ref="chat"></chatPage>
 		</view>
 		<view v-if="tabberPageLoadFlag[2]" :style="{
 			display: currentTabbarIndex === 2 ? '' : 'none'
@@ -26,8 +24,8 @@
 		</view>
 
 		<!-- 底部导航栏 -->
-		<up-tabbar :value="currentTabbarIndex" @change="changeTabbar" :fixed="true" :placeholder="false"
-			:safeAreaInsetBottom="false">
+		<up-tabbar :value="currentTabbarIndex" @change="changeTabbar" :fixed="true" :placeholder="true"
+			:safeAreaInsetBottom="true">
 			<up-tabbar-item :text="t('tabbar.search')" icon="search" @click="click1"></up-tabbar-item>
 			<up-tabbar-item :text="t('tabbar.chat')" icon="chat" @click="click1"></up-tabbar-item>
 			<up-tabbar-item :text="t('tabbar.profile')" icon="account" @click="click1"></up-tabbar-item>
@@ -122,6 +120,11 @@ function _switchTabbarPage(index) {
 		tabberPageLoadFlag.value[index] = true
 	}
 }
+
+// tabbar 点击事件
+function click1() {
+	// 可以在这里添加额外的点击处理逻辑
+}
 </script>
 
 <style lang="scss" scoped>
@@ -132,14 +135,18 @@ function _switchTabbarPage(index) {
 
 	.custom-tabbar-page {
 		width: 100%;
-
-		height: 100vh;
+		height: calc(100vh - 80px); // 给 tabbar 留出空间
 		background: #F3F4F6;
-
 		box-sizing: border-box;
-		padding-bottom: 0rpx;
-		padding-bottom: calc(0rpx + constant(safe-area-inset-bottom));
-		padding-bottom: calc(0rpx + env(safe-area-inset-bottom));
+		padding-bottom: 20rpx; // 额外的底部间距
+		padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+	}
+
+	.chat-page-wrapper {
+		width: 100%;
+		height: calc(100vh - 80px); // 给 tabbar 留出空间
+		position: relative; // 为聊天页面的固定输入框提供定位参考
 	}
 
 	.color-select {

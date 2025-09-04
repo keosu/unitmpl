@@ -429,9 +429,8 @@ const showPrivacy = () => {
 <style lang="scss" scoped>
 .login-container {
 	min-height: 100vh;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding: 40px 30px;
-	transition: all 0.3s ease;
+	background: #667eea;
+	padding: 80rpx 60rpx;
 }
 
 .header-section {
@@ -623,11 +622,10 @@ const showPrivacy = () => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 12px 24px;
+	padding: 24rpx 48rpx;
 	border: none;
-	border-radius: 12px;
+	border-radius: 24rpx;
 	background: rgba(255, 255, 255, 0.9);
-	transition: all 0.3s ease;
 }
 
 .wechat-btn {

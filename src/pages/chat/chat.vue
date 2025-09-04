@@ -120,6 +120,10 @@ const sendMessage = async () => {
 	messageList.value.push(message)
 	inputText.value = ''
 	
+	// 滚动到底部
+	await nextTick()
+	scrollToBottom()
+	
 	// 模拟AI回复
 	await simulateReply()
 }
@@ -142,6 +146,17 @@ const simulateReply = async () => {
 	
 	// 滚动到底部
 	await nextTick()
+	scrollToBottom()
+}
+
+// 滚动到底部的方法
+const scrollToBottom = () => {
+	setTimeout(() => {
+		uni.pageScrollTo({
+			scrollTop: 99999,
+			duration: 300
+		})
+	}, 100)
 }
 
 const formatTime = (timestamp) => {
@@ -161,11 +176,11 @@ const showSettings = () => {
 
 <style scoped>
 .chat-container {
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	background: #f8f9fa;
-	transition: all 0.3s ease;
+	position: relative;
 }
 
 .chat-header {
@@ -202,7 +217,9 @@ const showSettings = () => {
 .message-list {
 	flex: 1;
 	padding: 20px;
+	padding-bottom: 100px;
 	overflow-y: auto;
+	box-sizing: border-box;
 }
 
 .message-item {
@@ -296,10 +313,17 @@ const showSettings = () => {
 }
 
 .input-area {
+	position: absolute;
+	bottom: 5px;
+	left: 0;
+	right: 0;
 	background: #fff;
 	border-top: 1px solid #eee;
 	padding: 15px 20px;
-	padding-bottom: calc(15px + env(safe-area-inset-bottom));
+	padding-bottom: 15px;
+	z-index: 100;
+	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 15px 15px 0 0;
 }
 
 .input-container {
@@ -343,7 +367,6 @@ const showSettings = () => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: all 0.3s ease;
 }
 
 .send-btn.active {
@@ -387,6 +410,7 @@ const showSettings = () => {
 .theme-dark .input-area {
 	background: #2a2a2a;
 	border-top-color: #333;
+	box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.1);
 }
 
 .theme-dark .input-wrapper {

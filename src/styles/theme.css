@@ -41,17 +41,16 @@
 }
 
 .theme-light .page-container {
-	background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+	background: #ffffff;
 }
 
 .theme-dark .page-container {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: #667eea;
 }
 
 /* ===== 卡片组件主题 ===== */
 .theme-card {
-	transition: all 0.3s ease;
-	border-radius: 20px;
+	border-radius: 20rpx;
 	backdrop-filter: blur(10px);
 }
 
@@ -69,8 +68,7 @@
 
 /* ===== 输入框组件主题 ===== */
 .theme-input {
-	transition: all 0.3s ease;
-	border-radius: 25px;
+	border-radius: 50rpx;
 }
 
 .theme-light .theme-input {
@@ -87,8 +85,7 @@
 
 /* ===== 按钮组件主题 ===== */
 .theme-btn {
-	transition: all 0.3s ease;
-	border-radius: 20px;
+	border-radius: 40rpx;
 }
 
 .theme-light .theme-btn {
@@ -109,7 +106,7 @@
 
 /* ===== 文字主题 ===== */
 .theme-text-primary {
-	transition: color 0.3s ease;
+	/* 移除 transition */
 }
 
 .theme-light .theme-text-primary {
@@ -123,7 +120,7 @@
 }
 
 .theme-text-secondary {
-	transition: color 0.3s ease;
+	/* 移除 transition */
 }
 
 .theme-light .theme-text-secondary {
@@ -136,7 +133,7 @@
 
 /* ===== 分割线主题 ===== */
 .theme-divider {
-	transition: background-color 0.3s ease;
+	/* 移除 transition */
 }
 
 .theme-light .theme-divider {
@@ -149,8 +146,7 @@
 
 /* ===== 列表项主题 ===== */
 .theme-list-item {
-	transition: all 0.3s ease;
-	border-bottom: 1px solid transparent;
+	border-bottom: 1rpx solid transparent;
 }
 
 .theme-light .theme-list-item {
@@ -167,9 +163,8 @@
 
 /* ===== 图标容器主题 ===== */
 .theme-icon-container {
-	transition: all 0.3s ease;
-	border-radius: 15px;
-	box-shadow: 0 4px 15px var(--shadow-light);
+	border-radius: 30rpx;
+	box-shadow: 0 8rpx 30rpx var(--shadow-light);
 }
 
 .theme-light .theme-icon-container {
@@ -182,14 +177,13 @@
 
 /* ===== 头部区域主题 ===== */
 .theme-header {
-	transition: all 0.3s ease;
-	
+	/* 移除 transition */
 }
 
 
 /* ===== 导航主题 ===== */
 .theme-nav-item {
-	transition: all 0.3s ease;
+	/* 移除 transition */
 }
 
 .theme-light .theme-nav-item {
@@ -202,7 +196,7 @@
 
 /* ===== 搜索栏主题 ===== */
 .theme-search-bar {
-	transition: all 0.3s ease;
+	/* 移除 transition */
 }
 
 .theme-light .theme-search-bar {
@@ -215,8 +209,7 @@
 
 /* ===== 商品卡片主题 ===== */
 .theme-product-card {
-	transition: all 0.3s ease;
-	border-radius: 15px;
+	border-radius: 30rpx;
 	overflow: hidden;
 }
 
@@ -234,8 +227,7 @@
 
 /* ===== 服务卡片主题 ===== */
 .theme-service-card {
-	transition: all 0.3s ease;
-	border-radius: 15px;
+	border-radius: 30rpx;
 }
 
 .theme-light .theme-service-card {
@@ -252,9 +244,8 @@
 
 /* ===== 选项项主题 ===== */
 .theme-option {
-	transition: all 0.3s ease;
-	border-radius: 15px;
-	border: 2px solid transparent;
+	border-radius: 30rpx;
+	border: 4rpx solid transparent;
 }
 
 .theme-light .theme-option {
@@ -279,17 +270,17 @@
 
 /* ===== 勾选标记主题 ===== */
 .theme-check {
-	width: 24px;
-	height: 24px;
-	background: linear-gradient(45deg, #4ECDC4, #44A08D);
+	width: 48rpx;
+	height: 48rpx;
+	background: #4ECDC4;
 	color: #fff;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 14px;
+	font-size: 28rpx;
 	font-weight: bold;
-	box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+	box-shadow: 0 4rpx 16rpx rgba(78, 205, 196, 0.3);
 }
 
 /* ===== 响应式主题切换 ===== */

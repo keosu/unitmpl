@@ -191,7 +191,7 @@ const clearHistory = () => {
 .search-container {
 	min-height: 100vh;
 	background: #f8f9fa;
-	transition: all 0.3s ease;
+	padding-bottom: 20px;
 }
 
 .search-header {

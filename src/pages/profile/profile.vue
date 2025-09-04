@@ -193,12 +193,12 @@ const themeOptions = computed(() => [
 	{
 		name: t('profile.theme_light'),
 		value: 'light',
-		color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+		color: '#667eea'
 	},
 	{
 		name: t('profile.theme_dark'),
 		value: 'dark',
-		color: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)'
+		color: '#2c3e50'
 	}
 ])
 
@@ -273,13 +273,13 @@ const handleLogout = () => {
 .profile-container {
 	min-height: 100vh;
 	background: #f8f9fa;
-	transition: all 0.3s ease;
+	padding-bottom: 20px;
 }
 
 .profile-header {
 	position: relative;
-	padding: 40px 20px 20px;
-	margin-bottom: 20px;
+	padding: 80rpx 40rpx 40rpx;
+	margin-bottom: 40rpx;
 }
 
 .header-bg {
@@ -287,9 +287,9 @@ const handleLogout = () => {
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 150px;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	border-radius: 0 0 30px 30px;
+	height: 300rpx;
+	background: #667eea;
+	border-radius: 0 0 60rpx 60rpx;
 }
 
 .user-info {
@@ -297,7 +297,7 @@ const handleLogout = () => {
 	z-index: 2;
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	gap: 40rpx;
 }
 
 .avatar-wrapper {
@@ -305,27 +305,27 @@ const handleLogout = () => {
 }
 
 .user-avatar {
-	width: 80px;
-	height: 80px;
-	border-radius: 40px;
-	border: 4px solid rgba(255, 255, 255, 0.3);
+	width: 160rpx;
+	height: 160rpx;
+	border-radius: 80rpx;
+	border: 8rpx solid rgba(255, 255, 255, 0.3);
 }
 
 .avatar-edit {
 	position: absolute;
 	bottom: 0;
 	right: 0;
-	width: 24px;
-	height: 24px;
+	width: 48rpx;
+	height: 48rpx;
 	background: #fff;
-	border-radius: 12px;
+	border-radius: 24rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .edit-icon {
-	font-size: 12px;
+	font-size: 24rpx;
 }
 
 .user-details {
@@ -334,23 +334,23 @@ const handleLogout = () => {
 
 .user-name {
 	display: block;
-	font-size: 24px;
+	font-size: 48rpx;
 	font-weight: bold;
 	color: #fff;
-	margin-bottom: 5px;
+	margin-bottom: 10rpx;
 }
 
 .user-desc {
-	font-size: 14px;
+	font-size: 28rpx;
 	color: rgba(255, 255, 255, 0.8);
 }
 
 .stats-section {
-	margin: 0 20px 20px;
+	margin: 0 40rpx 40rpx;
 	background: #fff;
-	border-radius: 15px;
-	padding: 20px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 30rpx;
+	padding: 40rpx;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .stats-grid {
@@ -364,35 +364,35 @@ const handleLogout = () => {
 
 .stat-number {
 	display: block;
-	font-size: 24px;
+	font-size: 48rpx;
 	font-weight: bold;
 	color: #333;
-	margin-bottom: 5px;
+	margin-bottom: 10rpx;
 }
 
 .stat-label {
-	font-size: 12px;
+	font-size: 24rpx;
 	color: #999;
 }
 
 .menu-section {
-	margin: 0 20px 20px;
+	margin: 0 40rpx 40rpx;
 }
 
 .menu-group {
 	background: #fff;
-	border-radius: 15px;
-	margin-bottom: 15px;
+	border-radius: 30rpx;
+	margin-bottom: 30rpx;
 	overflow: hidden;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .menu-item {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 15px 20px;
-	border-bottom: 1px solid #f0f0f0;
+	padding: 30rpx 40rpx;
+	border-bottom: 1rpx solid #f0f0f0;
 }
 
 .menu-item:last-child {
@@ -402,79 +402,78 @@ const handleLogout = () => {
 .menu-left {
 	display: flex;
 	align-items: center;
-	gap: 15px;
+	gap: 30rpx;
 }
 
 .menu-icon {
-	width: 36px;
-	height: 36px;
-	border-radius: 8px;
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 16rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .icon-text {
-	font-size: 18px;
+	font-size: 36rpx;
 	color: #fff;
 }
 
 .menu-title {
-	font-size: 16px;
+	font-size: 32rpx;
 	color: #333;
 }
 
 .menu-right {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: 20rpx;
 }
 
 .menu-badge {
 	background: #ff4757;
 	color: #fff;
-	font-size: 12px;
-	padding: 2px 8px;
-	border-radius: 10px;
-	min-width: 20px;
+	font-size: 24rpx;
+	padding: 4rpx 16rpx;
+	border-radius: 20rpx;
+	min-width: 40rpx;
 	text-align: center;
 }
 
 .menu-arrow {
-	font-size: 16px;
+	font-size: 32rpx;
 	color: #ccc;
 }
 
 .theme-section,
 .language-section {
-	margin: 0 20px 20px;
+	margin: 0 40rpx 40rpx;
 	background: #fff;
-	border-radius: 15px;
-	padding: 20px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 30rpx;
+	padding: 40rpx;
+	box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .section-title {
-	font-size: 16px;
+	font-size: 32rpx;
 	font-weight: bold;
 	color: #333;
-	margin-bottom: 15px;
+	margin-bottom: 30rpx;
 }
 
 .theme-options,
 .language-options {
 	display: flex;
-	gap: 15px;
+	gap: 30rpx;
 }
 
 .theme-option,
 .language-option {
 	flex: 1;
-	padding: 15px;
-	border: 2px solid #f0f0f0;
-	border-radius: 10px;
+	padding: 30rpx;
+	border: 4rpx solid #f0f0f0;
+	border-radius: 20rpx;
 	text-align: center;
-	transition: all 0.3s ease;
 }
 
 .theme-option.active,
@@ -484,37 +483,37 @@ const handleLogout = () => {
 }
 
 .theme-preview {
-	width: 40px;
-	height: 40px;
-	border-radius: 20px;
-	margin: 0 auto 10px;
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 40rpx;
+	margin: 0 auto 20rpx;
 }
 
 .theme-name,
 .language-name {
 	display: block;
-	font-size: 14px;
+	font-size: 28rpx;
 	color: #333;
 }
 
 .language-flag {
 	display: block;
-	font-size: 24px;
-	margin-bottom: 5px;
+	font-size: 48rpx;
+	margin-bottom: 10rpx;
 }
 
 .logout-section {
-	margin: 0 20px 40px;
+	margin: 0 40rpx 80rpx;
 }
 
 .logout-btn {
 	width: 100%;
-	padding: 15px;
+	padding: 30rpx;
 	background: #ff4757;
 	color: #fff;
 	border: none;
-	border-radius: 10px;
-	font-size: 16px;
+	border-radius: 20rpx;
+	font-size: 32rpx;
 	font-weight: bold;
 }
 
