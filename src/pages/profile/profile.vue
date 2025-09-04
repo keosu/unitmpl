@@ -65,10 +65,7 @@
 					@click="switchTheme(theme.value)"
 				>
 					<view class="theme-button-content">
-						<view 
-							class="theme-preview" 
-							:style="{ background: theme.color }"
-						></view>
+						<text class="theme-emoji">{{ theme.emoji }}</text>
 						<text class="theme-name">{{ theme.name }}</text>
 					</view>
 				</up-button>
@@ -213,12 +210,14 @@ const themeOptions = computed(() => [
 	{
 		name: t('profile.theme_light'),
 		value: 'light',
-		color: '#f8f9fa'
+		color: '#f8f9fa',
+		emoji: '☀️' // 太阳emoji
 	},
 	{
 		name: t('profile.theme_dark'),
 		value: 'dark',
-		color: '#2d3748'
+		color: '#2d3748',
+		emoji: '🌙' // 月亮emoji
 	}
 ])
 
@@ -532,14 +531,13 @@ const handleLogout = () => {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 6rpx;
+	gap: 8rpx;
 	padding: 10rpx 5rpx;
 }
 
-.theme-preview {
-	width: 40rpx;
-	height: 40rpx;
-	border-radius: 20rpx;
+.theme-emoji {
+	font-size: 48rpx;
+	line-height: 1;
 }
 
 .theme-name,
