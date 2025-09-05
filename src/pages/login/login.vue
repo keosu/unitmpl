@@ -4,13 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
 import { useUserStore } from '@/store/user.js'
 import { getToken } from '@/utils/request/auth.js'
-import { 
-	mockPasswordLogin, 
-	mockPhoneLogin, 
-	mockSendSmsCode, 
-	mockWechatLogin,
-	mockRegister 
-} from '@/utils/mockAuth.js'
+import { authAPI } from '@/api/authService.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
@@ -90,21 +84,26 @@ const handlePasswordLogin = async () => {
 	
 	uni.showLoading({ title: t('login.logging_in') })
 	try {
-		const result = await mockPasswordLogin(
+		const result = await authAPI.login(
 			loginForm.value.username,
 			loginForm.value.password
 		)
 		
-		await userStore.setUserInfo(result)
-		uni.hideLoading()
-		uni.showToast({ title: t('login.login_success'), icon: 'success' })
-		
-		setTimeout(() => {
-			uni.reLaunch({ url: '/pages/index/index?index=1' })
-		}, 1000)
+		if (result.success) {
+			await userStore.setUserInfo(result.data)
+			uni.hideLoading()
+			uni.showToast({ title: t('login.login_success'), icon: 'success' })
+			
+			setTimeout(() => {
+				uni.reLaunch({ url: '/pages/index/index?index=1' })
+			}, 1000)
+		} else {
+			uni.hideLoading()
+			uni.showToast({ title: result.message, icon: 'error' })
+		}
 	} catch (error) {
 		uni.hideLoading()
-		uni.showToast({ title: error.message, icon: 'error' })
+		uni.showToast({ title: error.message || '登录失败', icon: 'error' })
 	}
 }
 
@@ -113,24 +112,29 @@ const sendSmsCode = async () => {
 	if (!canSendCode.value) return
 	
 	try {
-		const result = await mockSendSmsCode(phoneForm.value.phone)
-		uni.showToast({ title: result.message, icon: 'success' })
+		const result = await authAPI.sendSmsCode(phoneForm.value.phone)
 		
-		// 开发阶段自动填充验证码
-		if (result.code) {
-			phoneForm.value.code = result.code
-		}
-		
-		// 开始倒计时
-		countdown.value = 60
-		countdownTimer = setInterval(() => {
-			countdown.value--
-			if (countdown.value <= 0) {
-				clearInterval(countdownTimer)
+		if (result.success) {
+			uni.showToast({ title: result.message, icon: 'success' })
+			
+			// 开发阶段自动填充验证码（Mock模式）
+			if (result.data && result.data.code) {
+				phoneForm.value.code = result.data.code
 			}
-		}, 1000)
+			
+			// 开始倒计时
+			countdown.value = 60
+			countdownTimer = setInterval(() => {
+				countdown.value--
+				if (countdown.value <= 0) {
+					clearInterval(countdownTimer)
+				}
+			}, 1000)
+		} else {
+			uni.showToast({ title: result.message, icon: 'error' })
+		}
 	} catch (error) {
-		uni.showToast({ title: error.message, icon: 'error' })
+		uni.showToast({ title: error.message || '发送失败', icon: 'error' })
 	}
 }
 
@@ -140,21 +144,26 @@ const handlePhoneLogin = async () => {
 	
 	uni.showLoading({ title: t('login.logging_in') })
 	try {
-		const result = await mockPhoneLogin(
+		const result = await authAPI.phoneLogin(
 			phoneForm.value.phone,
 			phoneForm.value.code
 		)
 		
-		await userStore.setUserInfo(result)
-		uni.hideLoading()
-		uni.showToast({ title: t('login.login_success'), icon: 'success' })
-		
-		setTimeout(() => {
-			uni.reLaunch({ url: '/pages/index/index?index=1' })
-		}, 1000)
+		if (result.success) {
+			await userStore.setUserInfo(result.data)
+			uni.hideLoading()
+			uni.showToast({ title: t('login.login_success'), icon: 'success' })
+			
+			setTimeout(() => {
+				uni.reLaunch({ url: '/pages/index/index?index=1' })
+			}, 1000)
+		} else {
+			uni.hideLoading()
+			uni.showToast({ title: result.message, icon: 'error' })
+		}
 	} catch (error) {
 		uni.hideLoading()
-		uni.showToast({ title: error.message, icon: 'error' })
+		uni.showToast({ title: error.message || '登录失败', icon: 'error' })
 	}
 }
 
@@ -164,18 +173,23 @@ const handleRegister = async () => {
 	
 	uni.showLoading({ title: t('login.registering') })
 	try {
-		const result = await mockRegister(registerForm.value)
+		const result = await authAPI.register(registerForm.value)
 		
-		await userStore.setUserInfo(result)
-		uni.hideLoading()
-		uni.showToast({ title: t('login.register_success'), icon: 'success' })
-		
-		setTimeout(() => {
-			uni.reLaunch({ url: '/pages/index/index?index=1' })
-		}, 1000)
+		if (result.success) {
+			await userStore.setUserInfo(result.data)
+			uni.hideLoading()
+			uni.showToast({ title: t('login.register_success'), icon: 'success' })
+			
+			setTimeout(() => {
+				uni.reLaunch({ url: '/pages/index/index?index=1' })
+			}, 1000)
+		} else {
+			uni.hideLoading()
+			uni.showToast({ title: result.message, icon: 'error' })
+		}
 	} catch (error) {
 		uni.hideLoading()
-		uni.showToast({ title: error.message, icon: 'error' })
+		uni.showToast({ title: error.message || '注册失败', icon: 'error' })
 	}
 }
 
@@ -183,18 +197,23 @@ const handleRegister = async () => {
 const handleWechatLogin = async () => {
 	uni.showLoading({ title: t('login.logging_in') })
 	try {
-		const result = await mockWechatLogin()
+		const result = await authAPI.wechatLogin()
 		
-		await userStore.setUserInfo(result)
-		uni.hideLoading()
-		uni.showToast({ title: t('login.login_success'), icon: 'success' })
-		
-		setTimeout(() => {
-			uni.reLaunch({ url: '/pages/index/index?index=1' })
-		}, 1000)
+		if (result.success) {
+			await userStore.setUserInfo(result.data)
+			uni.hideLoading()
+			uni.showToast({ title: t('login.login_success'), icon: 'success' })
+			
+			setTimeout(() => {
+				uni.reLaunch({ url: '/pages/index/index?index=1' })
+			}, 1000)
+		} else {
+			uni.hideLoading()
+			uni.showToast({ title: result.message, icon: 'error' })
+		}
 	} catch (error) {
 		uni.hideLoading()
-		uni.showToast({ title: error.message, icon: 'error' })
+		uni.showToast({ title: error.message || '微信登录失败', icon: 'error' })
 	}
 }
 

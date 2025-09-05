@@ -92,7 +92,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
-import { sendMessage as sendChatMessage, validateMessage, formatMessage } from '@/api/chatService.js'
+import { chatAPI } from '@/api/chatService-v2.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
@@ -119,21 +119,29 @@ const sendMessage = async () => {
 	const messageContent = inputText.value.trim()
 	
 	// 验证消息内容
-	const validation = validateMessage(messageContent)
-	if (!validation.valid) {
+	if (!messageContent || messageContent.length === 0) {
 		uni.showToast({
-			title: validation.error,
+			title: '请输入消息内容',
+			icon: 'none'
+		})
+		return
+	}
+	
+	if (messageContent.length > 500) {
+		uni.showToast({
+			title: '消息内容过长，请控制在500字符以内',
 			icon: 'none'
 		})
 		return
 	}
 	
 	// 添加用户消息
-	const userMessage = formatMessage({
+	const userMessage = {
 		type: 'sent',
 		content: messageContent,
-		timestamp: new Date()
-	})
+		timestamp: new Date(),
+		format: 'text'
+	}
 	
 	messageList.value.push(userMessage)
 	inputText.value = ''
@@ -151,20 +159,19 @@ const getAIReply = async (userMessage) => {
 	
 	try {
 		// 调用聊天服务API
-		const response = await sendChatMessage(userMessage, {
-			theme: themeStore.currentTheme,
-			delay: 1500
+		const response = await chatAPI.sendMessage(userMessage, {
+			theme: themeStore.currentTheme
 		})
 		
 		isTyping.value = false
 		
 		if (response.success) {
-			const aiReply = formatMessage({
+			const aiReply = {
 				type: 'received',
 				content: response.data.content,
 				timestamp: new Date(response.data.timestamp),
-				format: response.data.format
-			})
+				format: response.data.format || 'text'
+			}
 			
 			messageList.value.push(aiReply)
 			
@@ -173,12 +180,12 @@ const getAIReply = async (userMessage) => {
 			scrollToBottom()
 		} else {
 			// 错误处理
-			const errorReply = formatMessage({
+			const errorReply = {
 				type: 'received',
-				content: response.data.content,
-				timestamp: new Date(response.data.timestamp),
+				content: response.data?.content || '抱歉，服务暂时不可用。',
+				timestamp: new Date(),
 				format: 'text'
-			})
+			}
 			
 			messageList.value.push(errorReply)
 			await nextTick()
@@ -189,10 +196,16 @@ const getAIReply = async (userMessage) => {
 		isTyping.value = false
 		
 		// 显示错误消息
-		uni.showToast({
-			title: '网络错误，请稍后再试',
-			icon: 'none'
-		})
+		const errorReply = {
+			type: 'received',
+			content: '网络错误，请稍后再试。',
+			timestamp: new Date(),
+			format: 'text'
+		}
+		
+		messageList.value.push(errorReply)
+		await nextTick()
+		scrollToBottom()
 	}
 }
 

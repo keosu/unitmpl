@@ -11,6 +11,7 @@ import './styles/theme-global.css'
 
 import * as Pinia from 'pinia';
 import { useThemeStore } from './store/theme.js'
+import { initConfig } from './config/index.js'
 
 export function createApp() {
 	const app = createSSRApp(App);
@@ -23,6 +24,9 @@ export function createApp() {
 	// 初始化主题
 	const themeStore = useThemeStore(pinia)
 	themeStore.initTheme()
+	
+	// 初始化应用配置
+	initConfig()
 	
 	return {
 		app,

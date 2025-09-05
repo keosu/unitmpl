@@ -1,6 +1,8 @@
 <template>
 	<view class="index" :class="`theme-${themeStore.currentTheme}`">
 
+		<!-- 环境切换组件（仅开发阶段显示） -->
+		<EnvSwitcher :showButton="true" :showInfo="false" />
 
 		<!-- 二级页面 -->
 		<view v-if="tabberPageLoadFlag[0]" :style="{
@@ -40,6 +42,7 @@ import searchPage from '@/pages/search/search.vue'
 import chatPage from '@/pages/chat/chat.vue'
 import profilePage from '@/pages/profile/profile.vue'
 import CustomTabbar from '@/components/CustomTabbar.vue'
+import EnvSwitcher from '@/components/EnvSwitcher.vue'
 import {
 	ref,
 	computed
