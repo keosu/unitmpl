@@ -1,6 +1,5 @@
 import { createI18n } from "vue-i18n";
 
-
 import { getLocal, setLocal } from '@/utils/localStorage.js'
 
 // 动态导入所有语言文件
@@ -51,25 +50,29 @@ const SUPPORTED_LANGUAGES = ['en-us', 'zh-cn'];
 function getLocalLang() {
   let localLang = getLocal("language");
 
+  // 确保localLang不为undefined
   if (!localLang) {
     // 默认使用中文
     let defaultLang = 'zh-cn';
     
     // 可以考虑浏览器语言，但优先使用中文
-    const browserLang = navigator.language;
-    if (browserLang) {
-      const normalizedLang = browserLang.toLowerCase();
-      
-      // 语言映射转换
-      if (LANGUAGE_MAPPING[normalizedLang]) {
-        defaultLang = LANGUAGE_MAPPING[normalizedLang];
-      } else {
-        // 如果没有精确匹配，尝试前缀匹配
-        const prefixMatch = Object.keys(LANGUAGE_MAPPING).find(key =>
-          normalizedLang.startsWith(key.split('-')[0])
-        );
-        if (prefixMatch) {
-          defaultLang = LANGUAGE_MAPPING[prefixMatch];
+    // 在微信小程序中navigator可能不可用，添加保护
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      const browserLang = navigator.language;
+      if (browserLang) {
+        const normalizedLang = browserLang.toLowerCase();
+        
+        // 语言映射转换
+        if (LANGUAGE_MAPPING[normalizedLang]) {
+          defaultLang = LANGUAGE_MAPPING[normalizedLang];
+        } else {
+          // 如果没有精确匹配，尝试前缀匹配
+          const prefixMatch = Object.keys(LANGUAGE_MAPPING).find(key =>
+            normalizedLang.startsWith(key.split('-')[0])
+          );
+          if (prefixMatch) {
+            defaultLang = LANGUAGE_MAPPING[prefixMatch];
+          }
         }
       }
     }

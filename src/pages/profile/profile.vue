@@ -576,8 +576,9 @@ const handleLogout = () => {
 		gap: 20rpx;
 	}
 	
-	.theme-buttons > *, 
-	.language-buttons > * {
+	/* 替换通配符选择器以兼容微信小程序 */
+	.theme-buttons up-button,
+	.language-buttons up-button {
 		width: 100%;
 		margin: 0;
 	}

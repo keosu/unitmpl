@@ -3,9 +3,15 @@
  * @param { String } key
  */
 export function getLocal(key) {
-  if (!key) throw new Error('key is empty')
-  const value = uni.getStorageSync(key)
-  return value ? JSON.parse(value) : null
+  try {
+    if (!key) throw new Error('key is empty')
+    const value = uni.getStorageSync(key)
+    // 确保返回值不为undefined
+    return value ? JSON.parse(value) : null
+  } catch (error) {
+    console.error('getLocal error:', error)
+    return null
+  }
 }
 
 /**
@@ -14,9 +20,13 @@ export function getLocal(key) {
  * @param value
  */
 export function setLocal(key, value) {
-  if (!key) throw new Error('key is empty')
-  if (!value) return
-  uni.setStorageSync(key, JSON.stringify(value))
+  try {
+    if (!key) throw new Error('key is empty')
+    if (value === undefined || value === null) return
+    uni.setStorageSync(key, JSON.stringify(value))
+  } catch (error) {
+    console.error('setLocal error:', error)
+  }
 }
 
 /**
@@ -24,13 +34,23 @@ export function setLocal(key, value) {
  * @param { String } key
  */
 export function removeLocal(key) {
-  if (!key) throw new Error('key is empty')
-  return uni.removeStorageSync(key)
+  try {
+    if (!key) throw new Error('key is empty')
+    return uni.removeStorageSync(key)
+  } catch (error) {
+    console.error('removeLocal error:', error)
+    return false
+  }
 }
 
 /**
  * clear localStorage 清除本地存储
  */
 export function clearLocal() {
-  return uni.clearStorageSync()
+  try {
+    return uni.clearStorageSync()
+  } catch (error) {
+    console.error('clearLocal error:', error)
+    return false
+  }
 }

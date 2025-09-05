@@ -19,10 +19,16 @@ onLaunch(async () => {
 	console.log('onLaunch')
 	
 	// 初始化语言设置
-	const savedLanguage = getLocal('language')
-	if (savedLanguage) {
-		locale.value = savedLanguage
-	} else {
+	try {
+		const savedLanguage = getLocal('language')
+		if (savedLanguage) {
+			locale.value = savedLanguage
+		} else {
+			// 默认设置为中文
+			locale.value = 'zh-cn'
+		}
+	} catch (error) {
+		console.error('语言初始化错误:', error)
 		// 默认设置为中文
 		locale.value = 'zh-cn'
 	}
