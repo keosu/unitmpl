@@ -11,6 +11,9 @@ importers:
       '@dcloudio/uni-app':
         specifier: 3.0.0-alpha-4080120250821001
         version: 3.0.0-alpha-4080120250821001(@dcloudio/types@3.4.19)(postcss@8.5.6)(rollup@4.50.0)(vue@3.5.18)
+      '@dcloudio/uni-components':
+        specifier: 3.0.0-alpha-4080120250821001
+        version: 3.0.0-alpha-4080120250821001(postcss@8.5.6)(rollup@4.50.0)(vue@3.5.18)
       '@dcloudio/uni-h5':
         specifier: 3.0.0-alpha-4080120250821001
         version: 3.0.0-alpha-4080120250821001(postcss@8.5.6)(rollup@4.50.0)(vue@3.5.18)

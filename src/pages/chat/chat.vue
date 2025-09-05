@@ -29,7 +29,14 @@
 						<text class="avatar-text">🤖</text>
 					</view>
 					<view class="message-bubble" :class="message.type">
-						<text class="message-text">{{ message.content }}</text>
+						<up-markdown 
+							v-if="message.type === 'received'" 
+							:content="message.content" 
+							:theme="themeStore.currentTheme"
+							:previewImg="true"
+							class="message-markdown"
+						/>
+						<text v-else class="message-text">{{ message.content }}</text>
 						<text class="message-time">{{ formatTime(message.timestamp) }}</text>
 					</view>
 					<view v-if="message.type === 'sent'" class="avatar">
@@ -85,6 +92,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
+import { sendMessage as sendChatMessage, validateMessage, formatMessage } from '@/api/chatService.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
@@ -101,15 +109,6 @@ const messageList = ref([
 
 const canSend = computed(() => inputText.value.trim().length > 0)
 
-// 模拟回复
-const mockReplies = [
-	t('chat.reply_1'),
-	t('chat.reply_2'),
-	t('chat.reply_3'),
-	t('chat.reply_4'),
-	t('chat.reply_5')
-]
-
 const onInput = () => {
 	// 输入处理
 }
@@ -117,42 +116,84 @@ const onInput = () => {
 const sendMessage = async () => {
 	if (!canSend.value) return
 	
-	const message = {
-		type: 'sent',
-		content: inputText.value.trim(),
-		timestamp: new Date()
+	const messageContent = inputText.value.trim()
+	
+	// 验证消息内容
+	const validation = validateMessage(messageContent)
+	if (!validation.valid) {
+		uni.showToast({
+			title: validation.error,
+			icon: 'none'
+		})
+		return
 	}
 	
-	messageList.value.push(message)
+	// 添加用户消息
+	const userMessage = formatMessage({
+		type: 'sent',
+		content: messageContent,
+		timestamp: new Date()
+	})
+	
+	messageList.value.push(userMessage)
 	inputText.value = ''
 	
 	// 滚动到底部
 	await nextTick()
 	scrollToBottom()
 	
-	// 模拟AI回复
-	await simulateReply()
+	// 获取AI回复
+	await getAIReply(messageContent)
 }
 
-const simulateReply = async () => {
+const getAIReply = async (userMessage) => {
 	isTyping.value = true
 	
-	// 模拟延迟
-	await new Promise(resolve => setTimeout(resolve, 1500))
-	
-	isTyping.value = false
-	
-	const reply = {
-		type: 'received',
-		content: mockReplies[Math.floor(Math.random() * mockReplies.length)],
-		timestamp: new Date()
+	try {
+		// 调用聊天服务API
+		const response = await sendChatMessage(userMessage, {
+			theme: themeStore.currentTheme,
+			delay: 1500
+		})
+		
+		isTyping.value = false
+		
+		if (response.success) {
+			const aiReply = formatMessage({
+				type: 'received',
+				content: response.data.content,
+				timestamp: new Date(response.data.timestamp),
+				format: response.data.format
+			})
+			
+			messageList.value.push(aiReply)
+			
+			// 滚动到底部
+			await nextTick()
+			scrollToBottom()
+		} else {
+			// 错误处理
+			const errorReply = formatMessage({
+				type: 'received',
+				content: response.data.content,
+				timestamp: new Date(response.data.timestamp),
+				format: 'text'
+			})
+			
+			messageList.value.push(errorReply)
+			await nextTick()
+			scrollToBottom()
+		}
+	} catch (error) {
+		console.error('获取AI回复失败:', error)
+		isTyping.value = false
+		
+		// 显示错误消息
+		uni.showToast({
+			title: '网络错误，请稍后再试',
+			icon: 'none'
+		})
 	}
-	
-	messageList.value.push(reply)
-	
-	// 滚动到底部
-	await nextTick()
-	scrollToBottom()
 }
 
 // 滚动到底部的方法
@@ -322,6 +363,65 @@ const showSettings = () => {
 	padding: 12px 16px;
 	border-radius: 18px;
 	position: relative;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+/* Markdown内容样式优化 */
+.message-bubble :deep(.up-markdown) {
+	padding: 0;
+	font-size: 32rpx;
+}
+
+.message-bubble :deep(.up-markdown h1),
+.message-bubble :deep(.up-markdown h2),
+.message-bubble :deep(.up-markdown h3) {
+	margin: 16rpx 0 12rpx 0;
+	font-size: 36rpx;
+}
+
+.message-bubble :deep(.up-markdown h4),
+.message-bubble :deep(.up-markdown h5),
+.message-bubble :deep(.up-markdown h6) {
+	margin: 12rpx 0 8rpx 0;
+	font-size: 32rpx;
+}
+
+.message-bubble :deep(.up-markdown p) {
+	margin: 8rpx 0;
+	font-size: 32rpx;
+	line-height: 1.5;
+}
+
+.message-bubble :deep(.up-markdown pre) {
+	margin: 12rpx 0;
+	max-width: 100%;
+	overflow-x: auto;
+	font-size: 26rpx;
+	border-radius: 12rpx;
+}
+
+.message-bubble :deep(.up-markdown table) {
+	max-width: 100%;
+	overflow-x: auto;
+	font-size: 26rpx;
+}
+
+.message-bubble :deep(.up-markdown ul),
+.message-bubble :deep(.up-markdown ol) {
+	margin: 8rpx 0;
+	padding-left: 32rpx;
+}
+
+.message-bubble :deep(.up-markdown li) {
+	margin: 4rpx 0;
+	font-size: 32rpx;
+}
+
+.message-bubble :deep(.up-markdown blockquote) {
+	margin: 8rpx 0;
+	padding: 8rpx 16rpx;
+	border-radius: 8rpx;
 }
 
 .message-bubble.received {
