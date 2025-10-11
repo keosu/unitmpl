@@ -154,6 +154,11 @@ const statsData = computed(() => [
 const menuGroups = computed(() => [
 	[
 		{
+			icon: '📝',
+			title: t('profile.publish_case'),
+			color: '#3498DB'
+		},
+		{
 			icon: '👤',
 			title: t('profile.edit_profile'),
 			color: '#FF6B6B'
@@ -250,10 +255,17 @@ const changeAvatar = () => {
 }
 
 const handleMenuClick = (item) => {
-	uni.showToast({
-		title: item.title,
-		icon: 'none'
-	})
+	if (item.title === t('profile.publish_case')) {
+		// Navigate to publish page
+		uni.navigateTo({
+			url: '/pages/publish/publish'
+		})
+	} else {
+		uni.showToast({
+			title: item.title,
+			icon: 'none'
+		})
+	}
 }
 
 const switchTheme = (theme) => {

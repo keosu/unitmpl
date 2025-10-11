@@ -10,7 +10,7 @@ const ENV_CONFIG = {
     name: '开发环境',
     baseURL: 'http://127.0.0.1:8000/api/v1',
     wsURL: 'ws://127.0.0.1:8000/ws',
-    enableMock: false, // 是否启用Mock数据
+    enableMock: true, // 是否启用Mock数据
     timeout: 10000
   },
   
