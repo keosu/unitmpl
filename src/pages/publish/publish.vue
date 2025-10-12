@@ -11,7 +11,8 @@
         ref="publishFormRef"
         :model="formData"
         :rules="formRules"
-        label-position="top"
+        label-position="left"
+        label-width="120"
       >
         <!-- 案例标题 -->
         <up-form-item 
@@ -32,20 +33,25 @@
           prop="case_type"
           required
         >
-          <up-picker
-            v-model="formData.case_type"
-            :range="caseTypeOptions"
-            range-key="label"
-            :placeholder="t('publish.case_type_placeholder')"
-            @confirm="onCaseTypeConfirm"
-          >
+          <view class="picker-wrapper">
             <up-input
               v-model="selectedCaseTypeLabel"
               :placeholder="t('publish.case_type_placeholder')"
-              disabled
               border="surround"
+              readonly
+              @click="showCaseTypePicker = true"
             />
-          </up-picker>
+            <up-popup v-model="showCaseTypePicker" mode="bottom">
+              <up-picker
+                :show="showCaseTypePicker"
+                v-model="formData.case_type"
+                :range="caseTypeOptions"
+                range-key="label"
+                @confirm="onCaseTypeConfirm"
+                @cancel="showCaseTypePicker = false"
+              />
+            </up-popup>
+          </view>
         </up-form-item>
 
         <!-- 案例描述 -->
@@ -58,7 +64,8 @@
             v-model="formData.description"
             :placeholder="t('publish.case_description_placeholder')"
             border="surround"
-            auto-height
+            :auto-height="false"
+            :height="200"
           />
         </up-form-item>
 
@@ -79,22 +86,25 @@
           :label="t('publish.tags')" 
           prop="tags"
         >
-          <up-input 
-            v-model="tagInput"
-            :placeholder="t('publish.tags_placeholder')"
-            border="surround"
-            @confirm="addTag"
-          />
-          <view class="tags-container">
-            <up-tag 
-              v-for="(tag, index) in formData.tags" 
-              :key="index"
-              :text="tag"
-              type="primary"
-              closable
-              @close="removeTag(index)"
-              class="tag-item"
+          <view class="tags-section">
+            <up-input 
+              v-model="tagInput"
+              :placeholder="t('publish.tags_placeholder')"
+              border="surround"
+              @confirm="addTag"
             />
+            <view class="tags-container">
+              <up-tag 
+                v-for="(tag, index) in formData.tags" 
+                :key="index"
+                :text="tag"
+                type="primary"
+                size="mini"
+                closable
+                @close="removeTag(index)"
+                class="tag-item"
+              />
+            </view>
           </view>
         </up-form-item>
 
@@ -122,11 +132,24 @@
           :label="t('publish.incident_date')" 
           prop="incident_date"
         >
-          <up-datetime-picker
-            v-model="formData.incident_date"
-            mode="date"
-            :placeholder="t('publish.incident_date_placeholder')"
-          ></up-datetime-picker>
+          <view class="date-picker-wrapper">
+            <up-input
+              v-model="formattedIncidentDate"
+              :placeholder="t('publish.incident_date_placeholder')"
+              readonly
+              border="surround"
+              @click="showIncidentDatePicker = true"
+            />
+            <up-popup v-model="showIncidentDatePicker" mode="bottom">
+              <up-datetime-picker
+                :show="showIncidentDatePicker"
+                v-model="formData.incident_date"
+                mode="date"
+                @confirm="onIncidentDateConfirm"
+                @cancel="showIncidentDatePicker = false"
+              />
+            </up-popup>
+          </view>
         </up-form-item>
 
         <!-- 截止日期 -->
@@ -134,11 +157,24 @@
           :label="t('publish.deadline')" 
           prop="deadline"
         >
-          <up-datetime-picker
-            v-model="formData.deadline"
-            mode="date"
-            :placeholder="t('publish.deadline_placeholder')"
-          ></up-datetime-picker>
+          <view class="date-picker-wrapper">
+            <up-input
+              v-model="formattedDeadline"
+              :placeholder="t('publish.deadline_placeholder')"
+              readonly
+              border="surround"
+              @click="showDeadlinePicker = true"
+            />
+            <up-popup v-model="showDeadlinePicker" mode="bottom">
+              <up-datetime-picker
+                :show="showDeadlinePicker"
+                v-model="formData.deadline"
+                mode="date"
+                @confirm="onDeadlineConfirm"
+                @cancel="showDeadlinePicker = false"
+              />
+            </up-popup>
+          </view>
         </up-form-item>
 
         <!-- 法律问题 -->
@@ -232,6 +268,11 @@ const publishFormRef = ref(null)
 // 标签输入
 const tagInput = ref('')
 
+// 弹出层控制
+const showCaseTypePicker = ref(false)
+const showIncidentDatePicker = ref(false)
+const showDeadlinePicker = ref(false)
+
 // 提交状态
 const isSubmitting = ref(false)
 
@@ -306,6 +347,19 @@ const formattedDeadline = computed(() => {
 // 案例类型确认事件
 const onCaseTypeConfirm = (e) => {
   formData.case_type = e.value
+  showCaseTypePicker.value = false
+}
+
+// 事发日期确认事件
+const onIncidentDateConfirm = (e) => {
+  formData.incident_date = e
+  showIncidentDatePicker.value = false
+}
+
+// 截止日期确认事件
+const onDeadlineConfirm = (e) => {
+  formData.deadline = e
+  showDeadlinePicker.value = false
 }
 
 // 添加标签
@@ -396,6 +450,9 @@ onLoad(() => {
   font-size: 48rpx;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .publish-form {
@@ -405,11 +462,76 @@ onLoad(() => {
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
+.picker-wrapper,
+.date-picker-wrapper {
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+}
+
+.date-select-btn {
+  margin-left: 20rpx;
+  flex-shrink: 0;
+}
+
+.case-type-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.case-type-input {
+  flex: 1;
+}
+
+.custom-case-type-input {
+  margin-top: 10rpx;
+}
+
+.or-text {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.tags-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.section-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.preset-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.preset-tag-item {
+  margin: 0;
+  cursor: pointer;
+}
+
+.tag-input-container {
+  display: flex;
+  gap: 10rpx;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
 .tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
-  margin-top: 20rpx;
+  gap: 10rpx;
+  margin-top: 10rpx;
 }
 
 .tag-item {

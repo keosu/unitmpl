@@ -107,6 +107,7 @@
         "case_title_length": "案例标题长度应在1-200个字符之间",
         "case_type": "案例类型",
         "case_type_placeholder": "请选择案例类型",
+        "custom_case_type_placeholder": "或输入自定义类型",
         "case_type_required": "请选择案例类型",
         "case_description": "案例描述",
         "case_description_placeholder": "请详细描述案例情况",
@@ -115,6 +116,8 @@
         "case_category_placeholder": "请输入案例分类",
         "tags": "标签",
         "tags_placeholder": "输入标签后按回车添加",
+        "select_date": "选择日期",
+        "change_date": "更改日期",
         "priority": "优先级",
         "incident_date": "事发日期",
         "incident_date_placeholder": "请选择事发日期",
@@ -151,5 +154,17 @@
         "medium": "中",
         "high": "高",
         "urgent": "紧急"
+    },
+    "tags": {
+        "contract": "合同",
+        "dispute": "纠纷",
+        "compensation": "赔偿",
+        "breach": "违约",
+        "employment": "劳动",
+        "property": "房产",
+        "family": "家庭",
+        "criminal": "刑事",
+        "administrative": "行政",
+        "intellectual": "知识产权"
     }
 }

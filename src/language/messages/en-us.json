@@ -107,6 +107,7 @@
         "case_title_length": "Case title should be 1-200 characters",
         "case_type": "Case Type",
         "case_type_placeholder": "Select case type",
+        "custom_case_type_placeholder": "Or enter custom type",
         "case_type_required": "Please select case type",
         "case_description": "Case Description",
         "case_description_placeholder": "Please describe the case in detail",
@@ -115,6 +116,8 @@
         "case_category_placeholder": "Enter case category",
         "tags": "Tags",
         "tags_placeholder": "Enter tags and press Enter to add",
+        "select_date": "Select Date",
+        "change_date": "Change Date",
         "priority": "Priority",
         "incident_date": "Incident Date",
         "incident_date_placeholder": "Select incident date",
@@ -151,5 +154,17 @@
         "medium": "Medium",
         "high": "High",
         "urgent": "Urgent"
+    },
+    "tags": {
+        "contract": "Contract",
+        "dispute": "Dispute",
+        "compensation": "Compensation",
+        "breach": "Breach",
+        "employment": "Employment",
+        "property": "Property",
+        "family": "Family",
+        "criminal": "Criminal",
+        "administrative": "Administrative",
+        "intellectual": "Intellectual"
     }
 }
