@@ -1,189 +1,242 @@
 <template>
-	<view class="search-container" :class="`theme-${themeStore.currentTheme}`">
-		<!-- 搜索栏 -->
-		<view class="search-header">
-			<up-search 
-				v-model="searchKeyword"
-				:placeholder="t('search.placeholder')"
-				@search="handleSearch"
-				@clear="clearSearch"
-				shape="round"
-				bg-color="#f5f5f5"
-				margin="20rpx"
-				height="80rpx"
-			></up-search>
-		</view>
+	<view class="search-refactor-container" :class="`theme-${themeStore.currentTheme}`">
+		<!-- 顶部标签栏 -->
+		<up-tabs :list="tabsList" @click="tabClick" :current="tabCurrent"></up-tabs>
 
-		<!-- 筛选器 -->
-		<view class="filter-section" v-if="!searchKeyword">
-			<view class="filter-title">{{ t('search.filter_title') }}</view>
-			<up-row gutter="20">
-				<up-col span="3" v-for="filter in filterOptions" :key="filter.key">
-					<up-button
-						:type="selectedFilters[filter.key] === filter.value ? 'primary' : 'default'"
-						:plain="selectedFilters[filter.key] !== filter.value"
-						size="small"
-						shape="round"
-						customStyle="width: 100%; margin-bottom: 20rpx;"
-						@click="toggleFilter(filter.key, filter.value)"
-					>
-						{{ filter.label }}
-					</up-button>
-				</up-col>
-			</up-row>
-			<view class="clear-filters" v-if="hasActiveFilters">
-				<up-button 
-					type="warning"
-					text
-					size="mini"
-					@click="clearFilters"
-				>
-					{{ t('search.clear_filters') }}
-				</up-button>
-			</view>
-		</view>
+		<!-- 内容滑动区域 -->
+		<swiper class="swiper-box" :current="activeIndex" @change="tabChange">
+			<!-- 找律师 标签页 -->
+			<swiper-item class="swiper-item">
+				<scroll-view scroll-y style="height: 100%;">
+					<view class="search-container">
+						<!-- 搜索栏 -->
+						<view class="search-header">
+							<up-search 
+								v-model="searchKeyword"
+								:placeholder="t('search.placeholder')"
+								@search="handleSearch"
+								@clear="clearSearch"
+								shape="round"
+								bg-color="#f5f5f5"
+								margin="20rpx"
+								height="80rpx"
+							></up-search>
+						</view>
 
-		<!-- 搜索历史 -->
-		<view v-if="!searchKeyword && searchHistory.length > 0" class="search-history">
-			<view class="history-header">
-				<text class="history-title">{{ t('search.history') }}</text>
-				<up-button 
-					type="primary" 
-					text
-					size="mini"
-					@click="clearHistory"
-				>
-					{{ t('search.clear') }}
-				</up-button>
-			</view>
-			<view class="history-tags">
-				<up-tag 
-					v-for="(item, index) in searchHistory" 
-					:key="index"
-					:text="item"
-					type="info"
-					mode="light"
-					shape="circle"
-					size="default"
-					customStyle="margin: 10rpx;"
-					@click="selectHistory(item)"
-				></up-tag>
-			</view>
-		</view>
+						<!-- 筛选器 -->
+						<view class="filter-section" v-if="!searchKeyword">
+							<view class="filter-title">{{ t('search.filter_title') }}</view>
+							<up-row gutter="20">
+								<up-col span="3" v-for="filter in filterOptions" :key="filter.key">
+									<up-button
+										:type="selectedFilters[filter.key] === filter.value ? 'primary' : 'default'"
+										:plain="selectedFilters[filter.key] !== filter.value"
+										size="small"
+										shape="round"
+										customStyle="width: 100%; margin-bottom: 20rpx;"
+										@click="toggleFilter(filter.key, filter.value)"
+									>
+										{{ filter.label }}
+									</up-button>
+								</up-col>
+							</up-row>
+							<view class="clear-filters" v-if="hasActiveFilters">
+								<up-button 
+									type="warning"
+									text
+									size="mini"
+									@click="clearFilters"
+								>
+									{{ t('search.clear_filters') }}
+								</up-button>
+							</view>
+						</view>
 
-		<!-- 热门搜索 -->
-		<view v-if="!searchKeyword" class="hot-search">
-			<view class="hot-header">
-				<text class="hot-title">🔥 {{ t('search.hot') }}</text>
-			</view>
-			<view class="hot-tags">
-				<up-tag 
-					v-for="(item, index) in hotKeywords" 
-					:key="index"
-					:text="item"
-					type="warning"
-					mode="light"
-					shape="circle"
-					size="default"
-					customStyle="margin: 10rpx;"
-					@click="selectHot(item)"
-				></up-tag>
-			</view>
-		</view>
+						<!-- 搜索历史 -->
+						<view v-if="!searchKeyword && searchHistory.length > 0" class="search-history">
+							<view class="history-header">
+								<text class="history-title">{{ t('search.history') }}</text>
+								<up-button 
+									type="primary" 
+									text
+									size="mini"
+									@click="clearHistory"
+								>
+									{{ t('search.clear') }}
+								</up-button>
+							</view>
+							<view class="history-tags">
+								<up-tag 
+									v-for="(item, index) in searchHistory" 
+									:key="index"
+									:text="item"
+									type="info"
+									mode="light"
+									shape="circle"
+									size="default"
+									customStyle="margin: 10rpx;"
+									@click="selectHistory(item)"
+								></up-tag>
+							</view>
+						</view>
 
-		<!-- 律师列表 -->
-		<view v-if="isLoading" class="loading-container">
-			<up-loading-icon :show="true" mode="circle" size="60"></up-loading-icon>
-			<text class="loading-text">正在加载...</text>
-		</view>
-		
-		<view v-else-if="displayLawyers.length > 0" class="lawyers-list">
-			<view 
-				v-for="lawyer in displayLawyers" 
-				:key="lawyer.id"
-				class="lawyer-card"
-				@click="viewLawyer(lawyer)"
-			>
-				<view class="lawyer-header">
-					<image :src="lawyer.avatar" class="lawyer-avatar" mode="aspectFill" />
-					<view class="lawyer-basic">
-						<view class="lawyer-name">{{ lawyer.name }}</view>
-						<view class="lawyer-title">{{ lawyer.title }}</view>
-						<view class="lawyer-firm">{{ lawyer.firm }}</view>
-					</view>
-					<view class="lawyer-rating">
-						<up-rate :value="lawyer.rating" :count="5" :size="24" active-color="#FFD700" inactive-color="#e4e4e4" readonly></up-rate>
-						<text class="rating-text">{{ lawyer.rating }}/5</text>
-					</view>
-				</view>
-				
-				<view class="lawyer-specialties">
-					<text class="specialty-label">专业领域：</text>
-					<view class="specialty-tags">
-						<up-tag 
-							v-for="specialty in lawyer.specialties.slice(0, 3)" 
-							:key="specialty"
-							:text="specialty"
-							type="primary"
-							mode="light"
-							size="mini"
-							customStyle="margin-right: 10rpx;"
-						></up-tag>
-					</view>
-				</view>
-				
-				<view class="lawyer-stats">
-					<view class="stat-item">
-						<text class="stat-number">{{ lawyer.experience }}</text>
-						<text class="stat-label">年经验</text>
-					</view>
-					<view class="stat-item">
-						<text class="stat-number">{{ lawyer.cases }}</text>
-						<text class="stat-label">成功案例</text>
-					</view>
-					<view class="stat-item">
-						<text class="stat-number">￥{{ lawyer.hourlyRate }}</text>
-						<text class="stat-label">/小时</text>
-					</view>
-				</view>
-				
-				<view class="lawyer-description">
-					<text class="description-text">{{ lawyer.description }}</text>
-				</view>
-				
-				<view class="lawyer-actions">
-					<up-button 
-						type="primary"
-						plain
-						size="small"
-						shape="round"
-						customStyle="flex: 1; margin-right: 20rpx;"
-						@click.stop="consultLawyer(lawyer)"
-					>
-						在线咨询
-					</up-button>
-					<up-button 
-						type="primary"
-						size="small"
-						shape="round"
-						customStyle="flex: 1;"
-						@click.stop="callLawyer(lawyer)"
-					>
-						立即联系
-					</up-button>
-				</view>
-			</view>
-		</view>
+						<!-- 热门搜索 -->
+						<view v-if="!searchKeyword" class="hot-search">
+							<view class="hot-header">
+								<text class="hot-title">🔥 {{ t('search.hot') }}</text>
+							</view>
+							<view class="hot-tags">
+								<up-tag 
+									v-for="(item, index) in hotKeywords" 
+									:key="index"
+									:text="item"
+									type="warning"
+									mode="light"
+									shape="circle"
+									size="default"
+									customStyle="margin: 10rpx;"
+									@click="selectHot(item)"
+								></up-tag>
+							</view>
+						</view>
 
-		<!-- 空状态 -->
-		<view v-if="!isLoading && displayLawyers.length === 0" class="empty-state">
-			<up-empty 
-				mode="search"
-				:text="searchKeyword ? t('search.no_results') : t('search.no_lawyers')"
-				textColor="#999"
-				textSize="32"
-				iconSize="120"
-			></up-empty>
+						<!-- 律师列表 -->
+						<view v-if="isLoading" class="loading-container">
+							<up-loading-icon :show="true" mode="circle" size="60"></up-loading-icon>
+							<text class="loading-text">正在加载...</text>
+						</view>
+						
+						<view v-else-if="displayLawyers.length > 0" class="lawyers-list">
+							<view 
+								v-for="lawyer in displayLawyers" 
+								:key="lawyer.id"
+								class="lawyer-card"
+								@click="viewLawyer(lawyer)"
+							>
+								<view class="lawyer-header">
+									<image :src="lawyer.avatar" class="lawyer-avatar" mode="aspectFill" />
+									<view class="lawyer-basic">
+										<view class="lawyer-name">{{ lawyer.name }}</view>
+										<view class="lawyer-title">{{ lawyer.title }}</view>
+										<view class="lawyer-firm">{{ lawyer.firm }}</view>
+									</view>
+									<view class="lawyer-rating">
+										<up-rate :value="lawyer.rating" :count="5" :size="24" active-color="#FFD700" inactive-color="#e4e4e4" readonly></up-rate>
+										<text class="rating-text">{{ lawyer.rating }}/5</text>
+									</view>
+								</view>
+								
+								<view class="lawyer-specialties">
+									<text class="specialty-label">专业领域：</text>
+									<view class="specialty-tags">
+										<up-tag 
+											v-for="specialty in lawyer.specialties.slice(0, 3)" 
+											:key="specialty"
+											:text="specialty"
+											type="primary"
+											mode="light"
+											size="mini"
+											customStyle="margin-right: 10rpx;"
+										></up-tag>
+									</view>
+								</view>
+								
+								<view class="lawyer-stats">
+									<view class="stat-item">
+										<text class="stat-number">{{ lawyer.experience }}</text>
+										<text class="stat-label">年经验</text>
+									</view>
+									<view class="stat-item">
+										<text class="stat-number">{{ lawyer.cases }}</text>
+										<text class="stat-label">成功案例</text>
+									</view>
+									<view class="stat-item">
+										<text class="stat-number">￥{{ lawyer.hourlyRate }}</text>
+										<text class="stat-label">/小时</text>
+									</view>
+								</view>
+								
+								<view class="lawyer-description">
+									<text class="description-text">{{ lawyer.description }}</text>
+								</view>
+								
+								<view class="lawyer-actions">
+									<up-button 
+										type="primary"
+										plain
+										size="small"
+										shape="round"
+										customStyle="flex: 1; margin-right: 20rpx;"
+										@click.stop="consultLawyer(lawyer)"
+									>
+										在线咨询
+									</up-button>
+									<up-button 
+										type="primary"
+										size="small"
+										shape="round"
+										customStyle="flex: 1;"
+										@click.stop="callLawyer(lawyer)"
+									>
+										立即联系
+									</up-button>
+								</view>
+							</view>
+						</view>
+
+						<!-- 空状态 -->
+						<view v-if="!isLoading && displayLawyers.length === 0" class="empty-state">
+							<up-empty 
+								mode="search"
+								:text="searchKeyword ? t('search.no_results') : t('search.no_lawyers')"
+								textColor="#999"
+								textSize="32"
+								iconSize="120"
+							></up-empty>
+						</view>
+					</view>
+				</scroll-view>
+			</swiper-item>
+
+			<!-- 看案件 标签页 -->
+			<swiper-item class="swiper-item">
+				<scroll-view scroll-y style="height: 100%;">
+					<view class="case-list-container">
+						<!-- 加载状态 -->
+						<view v-if="isCasesLoading" class="loading-container">
+							<up-loading-icon :show="true" mode="circle" size="60"></up-loading-icon>
+						</view>
+						<!-- 案件卡片列表 -->
+						<view v-else-if="caseList.length > 0">
+							<view v-for="item in caseList" :key="item.id" class="case-card">
+								<view class="case-card-header">
+									<text class="case-card-title">{{ item.title }}</text>
+									<up-tag :text="item.status" type="primary" size="mini"></up-tag>
+								</view>
+								<view class="case-card-body">
+									<text class="case-card-number">案件编号: {{ item.case_number }}</text>
+									<view class="case-card-tags">
+										<up-tag :text="item.case_type" type="info" size="mini" plain></up-tag>
+										<up-tag :text="`优先级: ${item.priority}`" type="warning" size="mini" plain></up-tag>
+									</view>
+								</view>
+								<view class="case-card-footer">
+									<text class="case-card-date">创建于: {{ new Date(item.created_at).toLocaleDateString() }}</text>
+								</view>
+							</view>
+						</view>
+						<!-- 空状态 -->
+						<view v-else class="empty-state">
+							<up-empty mode="data" :text="t('search.no_cases')"></up-empty>
+						</view>
+					</view>
+				</scroll-view>
+			</swiper-item>
+		</swiper>
+
+		<!-- 自定义发布按钮 -->
+		<view class="custom-fab" @click="navigateToPublish">
+			<up-icon name="plus" color="#fff" size="28"></up-icon>
 		</view>
 	</view>
 </template>
@@ -194,11 +247,108 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
 import { useUserStore } from '@/store/user.js'
 import { getLocal, setLocal } from '@/utils/localStorage.js'
-import { lawyerAPI } from '@/api/lawyerService.js'
+// import { lawyerAPI } from '@/api/lawyerService.js'
+// import { caseService } from '@/api/caseService.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
 const userStore = useUserStore()
+
+// --- Mock Data ---
+const mockLawyers = ref([
+    {
+        id: '1',
+        name: '张伟律师',
+        title: '高级合伙人',
+        firm: '德恒律师事务所',
+        avatar: '/static/logo.png',
+        rating: 4.9,
+        specialties: ['公司法', '合同纠纷', '知识产权'],
+        experience: 15,
+        cases: 180,
+        hourlyRate: 1500,
+        description: '张伟律师在公司法和商业诉讼领域拥有超过15年的丰富经验，成功代理了多起重大案件。'
+    },
+    {
+        id: '2',
+        name: '李静律师',
+        title: '资深律师',
+        firm: '金杜律师事务所',
+        avatar: '/static/logo.png',
+        rating: 4.8,
+        specialties: ['婚姻家庭', '劳动争议', '侵权责任'],
+        experience: 10,
+        cases: 250,
+        hourlyRate: 1200,
+        description: '李静律师专注于家庭法和劳动法，以其亲和力和专业性赢得了客户的广泛赞誉。'
+    },
+]);
+
+const mockCases = ref([
+    {
+        id: 'case1',
+        title: '关于XX公司的合同违约案',
+        status: 'IN_PROGRESS',
+        case_number: 'CASE-2025-001',
+        case_type: 'civil',
+        priority: 'high',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'case2',
+        title: '劳动仲裁申请 - 王先生诉YY科技',
+        status: 'SUBMITTED',
+        case_number: 'CASE-2025-002',
+        case_type: 'labor',
+        priority: 'medium',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'case3',
+        title: '外观设计专利侵权案初步审核',
+        status: 'UNDER_REVIEW',
+        case_number: 'CASE-2025-003',
+        case_type: 'intellectual',
+        priority: 'medium',
+        created_at: new Date().toISOString()
+    },
+]);
+
+// Tab控制
+const tabCurrent = ref(0)
+const activeIndex = ref(0)
+const tabsList = ref([
+	{ name: '找律师' },
+	{ name: '看案件' }
+])
+
+const tabClick = (item) => {
+	activeIndex.value = item.index
+}
+
+const tabChange = (e) => {
+	tabCurrent.value = e.detail.current
+	if (tabCurrent.value === 1 && caseList.value.length === 0) {
+		fetchUnfinishedCases()
+	}
+}
+
+// 案件列表
+const caseList = ref([])
+const isCasesLoading = ref(false)
+
+const fetchUnfinishedCases = async () => {
+	isCasesLoading.value = true
+	// 使用Mock数据
+	setTimeout(() => {
+		caseList.value = mockCases.value;
+		isCasesLoading.value = false;
+	}, 1000); // 模拟1秒延迟
+}
+
+const navigateToPublish = () => {
+	uni.navigateTo({ url: '/pages/publish/publish' })
+}
 
 // 检查登录状态
 onMounted(async () => {
@@ -221,48 +371,21 @@ onMounted(async () => {
 })
 
 /**
- * 加载初始数据
+ * 加载初始数据 (Mock)
  */
 const loadInitialData = async () => {
 	isLoading.value = true
-	try {
-		// 并行加载律师数据和筛选选项
-		const [lawyersResult, filtersResult] = await Promise.all([
-			lawyerAPI.getAllLawyers(),
-			lawyerAPI.getFilterOptions()
-		])
-		
-		if (lawyersResult.success) {
-			lawyers.value = lawyersResult.data
-		} else {
-			uni.showToast({
-				title: lawyersResult.message || '获取律师数据失败',
-				icon: 'error'
-			})
-		}
-		
-		if (filtersResult.success) {
-			// 合并所有筛选选项
-			filterOptions.value = [
-				...filtersResult.data.specialtyTypes,
-				...filtersResult.data.locations,
-				...filtersResult.data.priceRanges
-			]
-		} else {
-			uni.showToast({
-				title: filtersResult.message || '获取筛选选项失败',
-				icon: 'error'
-			})
-		}
-	} catch (error) {
-		console.error('加载数据失败:', error)
-		uni.showToast({
-			title: '网络错误，请稍后重试',
-			icon: 'error'
-		})
-	} finally {
-		isLoading.value = false
-	}
+	// 使用Mock数据
+	setTimeout(() => {
+		lawyers.value = mockLawyers.value;
+		filterOptions.value = [
+			{ key: 'specialty', value: '公司法', label: '公司法' },
+			{ key: 'specialty', value: '婚姻家庭', label: '婚姻家庭' },
+			{ key: 'location', value: '北京', label: '北京' },
+			{ key: 'price', value: '1000-2000', label: '1k-2k' },
+		];
+		isLoading.value = false;
+	}, 500); // 模拟0.5秒延迟
 }
 
 const searchKeyword = ref('')
@@ -283,59 +406,42 @@ const hotKeywords = ref([
 	'房产纠纷'
 ])
 
-// 筛选选项（现在从API获取）
-// const filterOptions = computed(() => [...]) 已经通过ref定义
-
 // 计算属性
 const hasActiveFilters = computed(() => 
 	Object.keys(selectedFilters.value).length > 0
 )
 
 const displayLawyers = computed(() => {
-	// 现在筛选和搜索都在API层面处理，直接返回结果
-	return lawyers.value
+    if (!searchKeyword.value && !hasActiveFilters.value) {
+        return lawyers.value;
+    }
+    let filtered = [...lawyers.value];
+    // 关键词搜索
+    if (searchKeyword.value) {
+        filtered = filtered.filter(l => 
+            l.name.includes(searchKeyword.value) || 
+            l.description.includes(searchKeyword.value) ||
+            l.specialties.some(s => s.includes(searchKeyword.value))
+        );
+    }
+    // 筛选器
+    if (hasActiveFilters.value) {
+        // Mock筛选逻辑, 实际应在API层面处理
+    }
+	return filtered
 })
 
 // 方法
-const toggleFilter = async (key, value) => {
+const toggleFilter = (key, value) => {
 	if (selectedFilters.value[key] === value) {
-		// 如果已经选中，则取消选中
 		delete selectedFilters.value[key]
 	} else {
-		// 否则设置新值
 		selectedFilters.value[key] = value
 	}
-	// 筛选条件改变时重新搜索
-	await applyFilters()
 }
 
-const clearFilters = async () => {
+const clearFilters = () => {
 	selectedFilters.value = {}
-	// 清除筛选时重新加载所有数据
-	await loadAllLawyers()
-}
-
-/**
- * 应用筛选条件
- */
-const applyFilters = async () => {
-	isLoading.value = true
-	try {
-		const result = await lawyerAPI.searchLawyers({
-			keyword: searchKeyword.value,
-			filters: selectedFilters.value,
-			page: 1,
-			pageSize: 50
-		})
-		
-		if (result.success) {
-			lawyers.value = result.data.list
-		}
-	} catch (error) {
-		console.error('应用筛选失败:', error)
-	} finally {
-		isLoading.value = false
-	}
 }
 
 const viewLawyer = (lawyer) => {
@@ -370,66 +476,14 @@ const callLawyer = (lawyer) => {
 	})
 }
 
-const handleSearch = async () => {
+const handleSearch = () => {
 	if (searchKeyword.value.trim()) {
 		addToHistory(searchKeyword.value)
-		await searchLawyers()
 	}
 }
 
-/**
- * 搜索律师
- */
-const searchLawyers = async () => {
-	isLoading.value = true
-	try {
-		const result = await lawyerAPI.searchLawyers({
-			keyword: searchKeyword.value,
-			filters: selectedFilters.value,
-			page: 1,
-			pageSize: 50 // 暂时不做分页
-		})
-		
-		if (result.success) {
-			lawyers.value = result.data.list
-		} else {
-			uni.showToast({
-				title: result.message || '搜索失败',
-				icon: 'error'
-			})
-		}
-	} catch (error) {
-		console.error('搜索失败:', error)
-		uni.showToast({
-			title: '网络错误，请稍后重试',
-			icon: 'error'
-		})
-	} finally {
-		isLoading.value = false
-	}
-}
-
-const clearSearch = async () => {
+const clearSearch = () => {
 	searchKeyword.value = ''
-	// 清除搜索时重新加载所有律师数据
-	await loadAllLawyers()
-}
-
-/**
- * 加载所有律师数据
- */
-const loadAllLawyers = async () => {
-	isLoading.value = true
-	try {
-		const result = await lawyerAPI.getAllLawyers()
-		if (result.success) {
-			lawyers.value = result.data
-		}
-	} catch (error) {
-		console.error('加载律师数据失败:', error)
-	} finally {
-		isLoading.value = false
-	}
 }
 
 const addToHistory = (keyword) => {
@@ -463,9 +517,70 @@ const selectHot = (item) => {
 </script>
 
 <style scoped>
+.search-refactor-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+.swiper-box {
+	flex: 1;
+	overflow: hidden;
+}
+.swiper-item {
+	height: 100%;
+}
+
+.case-list-container {
+	padding: 20rpx;
+}
+
+.case-card {
+	background: #fff;
+	border-radius: 16rpx;
+	padding: 24rpx;
+	margin-bottom: 20rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
+}
+
+.theme-dark .case-card {
+	background: #2d3748;
+}
+
+.case-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16rpx;
+}
+
+.case-card-title {
+	font-size: 32rpx;
+	font-weight: bold;
+}
+
+.case-card-body {
+	margin-bottom: 16rpx;
+}
+
+.case-card-number {
+	font-size: 24rpx;
+	color: #999;
+	margin-bottom: 10rpx;
+}
+
+.case-card-tags {
+	display: flex;
+	gap: 10rpx;
+}
+
+.case-card-footer {
+	font-size: 24rpx;
+	color: #999;
+}
+
 /* 浅色主题（默认） */
 .search-container {
-	min-height: 100vh;
+	min-height: 100%;
 	background: #f8f9fa;
 	padding-bottom: 20px;
 }
@@ -815,6 +930,22 @@ const selectHot = (item) => {
 .empty-text {
 	font-size: 16px;
 	color: #999;
+}
+
+
+.custom-fab {
+	position: fixed;
+	right: 40rpx;
+	bottom: 120rpx;
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 50%;
+	background-color: #007aff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+	z-index: 10;
 }
 
 
