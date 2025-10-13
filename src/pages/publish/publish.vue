@@ -33,25 +33,27 @@
           prop="case_type"
           required
         >
-          <view class="picker-wrapper">
-            <up-input
-              v-model="selectedCaseTypeLabel"
-              :placeholder="t('publish.case_type_placeholder')"
-              border="surround"
-              readonly
-              @click="showCaseTypePicker = true"
+          <view class="case-type-container">
+            <up-tag
+              v-for="option in caseTypeOptions"
+              :key="option.value"
+              :text="option.label"
+              :type="formData.case_type === option.value ? 'primary' : 'info'"
+              :plain="formData.case_type !== option.value"
+              shape="circle"
+              class="case-type-tag"
+              @click="setCaseType(option.value)"
             />
-            <up-popup v-model="showCaseTypePicker" mode="bottom">
-              <up-picker
-                :show="showCaseTypePicker"
-                v-model="formData.case_type"
-                :range="caseTypeOptions"
-                range-key="label"
-                @confirm="onCaseTypeConfirm"
-                @cancel="showCaseTypePicker = false"
-              />
-            </up-popup>
           </view>
+        </up-form-item>
+
+        <!-- 发布者 -->
+        <up-form-item label="发布者" prop="publisher">
+          <up-input
+            :modelValue="userStore.user.username"
+            disabled
+            border="surround"
+          ></up-input>
         </up-form-item>
 
         <!-- 案例描述 -->
@@ -128,53 +130,17 @@
         </up-form-item>
 
         <!-- 事发日期 -->
-        <up-form-item 
-          :label="t('publish.incident_date')" 
-          prop="incident_date"
-        >
-          <view class="date-picker-wrapper">
-            <up-input
-              v-model="formattedIncidentDate"
-              :placeholder="t('publish.incident_date_placeholder')"
-              readonly
-              border="surround"
-              @click="showIncidentDatePicker = true"
-            />
-            <up-popup v-model="showIncidentDatePicker" mode="bottom">
-              <up-datetime-picker
-                :show="showIncidentDatePicker"
-                v-model="formData.incident_date"
-                mode="date"
-                @confirm="onIncidentDateConfirm"
-                @cancel="showIncidentDatePicker = false"
-              />
-            </up-popup>
-          </view>
+        <up-form-item :label="t('publish.incident_date')" prop="incident_date">
+          <picker mode="date" :value="formData.incident_date" @change="onIncidentDateChange">
+            <view class="uni-input">{{ formData.incident_date || t('publish.incident_date_placeholder') }}</view>
+          </picker>
         </up-form-item>
 
         <!-- 截止日期 -->
-        <up-form-item 
-          :label="t('publish.deadline')" 
-          prop="deadline"
-        >
-          <view class="date-picker-wrapper">
-            <up-input
-              v-model="formattedDeadline"
-              :placeholder="t('publish.deadline_placeholder')"
-              readonly
-              border="surround"
-              @click="showDeadlinePicker = true"
-            />
-            <up-popup v-model="showDeadlinePicker" mode="bottom">
-              <up-datetime-picker
-                :show="showDeadlinePicker"
-                v-model="formData.deadline"
-                mode="date"
-                @confirm="onDeadlineConfirm"
-                @cancel="showDeadlinePicker = false"
-              />
-            </up-popup>
-          </view>
+        <up-form-item :label="t('publish.deadline')" prop="deadline">
+          <picker mode="date" :value="formData.deadline" @change="onDeadlineChange">
+            <view class="uni-input">{{ formData.deadline || t('publish.deadline_placeholder') }}</view>
+          </picker>
         </up-form-item>
 
         <!-- 法律问题 -->
@@ -229,6 +195,7 @@
             {{ formData.is_confidential ? t('publish.confidential') : t('publish.public') }}
           </text>
         </up-form-item>
+
       </up-form>
 
       <!-- 提交按钮 -->
@@ -256,7 +223,6 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
 import { useUserStore } from '@/store/user.js'
 import { caseService } from '@/api/caseService.js'
-import dayjs from 'dayjs'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
@@ -268,13 +234,13 @@ const publishFormRef = ref(null)
 // 标签输入
 const tagInput = ref('')
 
-// 弹出层控制
-const showCaseTypePicker = ref(false)
-const showIncidentDatePicker = ref(false)
-const showDeadlinePicker = ref(false)
-
 // 提交状态
 const isSubmitting = ref(false)
+
+// 设置案例类型
+const setCaseType = (type) => {
+  formData.case_type = type;
+}
 
 // 表单数据
 const formData = reactive({
@@ -284,8 +250,8 @@ const formData = reactive({
   category: '',
   tags: [],
   priority: 'medium',
-  incident_date: null,
-  deadline: null,
+  incident_date: '',
+  deadline: '',
   legal_issues: '',
   client_goals: '',
   estimated_fee: '',
@@ -328,38 +294,14 @@ const priorityOptions = computed(() => [
   { label: t('priority.urgent'), value: 'urgent' }
 ])
 
-// 选中的案例类型标签
-const selectedCaseTypeLabel = computed(() => {
-  const selected = caseTypeOptions.value.find(option => option.value === formData.case_type)
-  return selected ? selected.label : ''
-})
 
-// 格式化的事件日期
-const formattedIncidentDate = computed(() => {
-  return formData.incident_date ? dayjs(formData.incident_date).format('YYYY-MM-DD') : ''
-})
 
-// 格式化的截止日期
-const formattedDeadline = computed(() => {
-  return formData.deadline ? dayjs(formData.deadline).format('YYYY-MM-DD') : ''
-})
-
-// 案例类型确认事件
-const onCaseTypeConfirm = (e) => {
-  formData.case_type = e.value
-  showCaseTypePicker.value = false
+const onIncidentDateChange = (e) => {
+  formData.incident_date = e.detail.value
 }
 
-// 事发日期确认事件
-const onIncidentDateConfirm = (e) => {
-  formData.incident_date = e
-  showIncidentDatePicker.value = false
-}
-
-// 截止日期确认事件
-const onDeadlineConfirm = (e) => {
-  formData.deadline = e
-  showDeadlinePicker.value = false
+const onDeadlineChange = (e) => {
+  formData.deadline = e.detail.value
 }
 
 // 添加标签
@@ -462,69 +404,25 @@ onLoad(() => {
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
+.case-type-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.case-type-tag {
+  cursor: pointer;
+}
+
 .picker-wrapper,
 .date-picker-wrapper {
   width: 100%;
-}
-
-.date-input {
-  width: 100%;
-}
-
-.date-select-btn {
-  margin-left: 20rpx;
-  flex-shrink: 0;
-}
-
-.case-type-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.case-type-input {
-  flex: 1;
-}
-
-.custom-case-type-input {
-  margin-top: 10rpx;
-}
-
-.or-text {
-  text-align: center;
-  color: #999;
-  font-size: 28rpx;
 }
 
 .tags-section {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
-}
-
-.section-label {
-  display: block;
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 20rpx;
-}
-
-.preset-tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
-
-.preset-tag-item {
-  margin: 0;
-  cursor: pointer;
-}
-
-.tag-input-container {
-  display: flex;
-  gap: 10rpx;
-  align-items: center;
-  margin-bottom: 10rpx;
 }
 
 .tags-container {
