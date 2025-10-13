@@ -1,7 +1,9 @@
 <template>
 	<view class="search-refactor-container" :class="`theme-${themeStore.currentTheme}`">
 		<!-- 顶部标签栏 -->
-		<up-tabs :list="tabsList" @click="tabClick" :current="tabCurrent"></up-tabs>
+		<view class="tabs-container">
+			<up-tabs :list="tabsList" @click="tabClick" :current="tabCurrent"></up-tabs>
+		</view>
 
 		<!-- 内容滑动区域 -->
 		<swiper class="swiper-box" :current="activeIndex" @change="tabChange">
@@ -207,17 +209,17 @@
 							<up-loading-icon :show="true" mode="circle" size="60"></up-loading-icon>
 						</view>
 						<!-- 案件卡片列表 -->
-						<view v-else-if="caseList.length > 0">
-							<view v-for="item in caseList" :key="item.id" class="case-card">
+						<view v-else-if="caseList.length > 0" class="case-cards-wrapper">
+							<view v-for="item in caseList" :key="item.id" class="case-card beautified">
 								<view class="case-card-header">
 									<text class="case-card-title">{{ item.title }}</text>
-									<up-tag :text="item.status" type="primary" size="mini"></up-tag>
+									<up-tag :text="item.status" :type="getStatusTagType(item.status)" size="mini" shape="circle"></up-tag>
 								</view>
 								<view class="case-card-body">
 									<text class="case-card-number">案件编号: {{ item.case_number }}</text>
 									<view class="case-card-tags">
-										<up-tag :text="item.case_type" type="info" size="mini" plain></up-tag>
-										<up-tag :text="`优先级: ${item.priority}`" type="warning" size="mini" plain></up-tag>
+										<up-tag :text="item.case_type" type="info" size="mini" plain shape="circle"></up-tag>
+										<up-tag :text="`优先级: ${item.priority}`" :type="getPriorityTagType(item.priority)" size="mini" plain shape="circle"></up-tag>
 									</view>
 								</view>
 								<view class="case-card-footer">
@@ -309,7 +311,7 @@ const mockCases = ref([
         status: 'UNDER_REVIEW',
         case_number: 'CASE-2025-003',
         case_type: 'intellectual',
-        priority: 'medium',
+        priority: 'low',
         created_at: new Date().toISOString()
     },
 ]);
@@ -344,6 +346,25 @@ const fetchUnfinishedCases = async () => {
 		caseList.value = mockCases.value;
 		isCasesLoading.value = false;
 	}, 1000); // 模拟1秒延迟
+}
+
+const getPriorityTagType = (priority) => {
+    switch (priority) {
+        case 'high': return 'error';
+        case 'urgent': return 'error';
+        case 'medium': return 'warning';
+        case 'low': return 'info';
+        default: return 'info';
+    }
+}
+
+const getStatusTagType = (status) => {
+    switch (status) {
+        case 'IN_PROGRESS': return 'primary';
+        case 'SUBMITTED': return 'success';
+        case 'UNDER_REVIEW': return 'warning';
+        default: return 'info';
+    }
 }
 
 const navigateToPublish = () => {
@@ -522,6 +543,10 @@ const selectHot = (item) => {
 	flex-direction: column;
 	height: 100vh;
 }
+.tabs-container {
+	display: flex;
+	justify-content: center;
+}
 .swiper-box {
 	flex: 1;
 	overflow: hidden;
@@ -534,48 +559,93 @@ const selectHot = (item) => {
 	padding: 20rpx;
 }
 
-.case-card {
-	background: #fff;
-	border-radius: 16rpx;
-	padding: 24rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
+.case-cards-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 24rpx;
 }
 
-.theme-dark .case-card {
+.case-card.beautified {
+	background: #fff;
+	border-radius: 24rpx;
+	padding: 32rpx;
+	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.08);
+	transition: all 0.2s ease-in-out;
+}
+
+.case-card.beautified:active {
+	transform: scale(0.98);
+}
+
+.theme-dark .case-card.beautified {
 	background: #2d3748;
+	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.2);
 }
 
 .case-card-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 16rpx;
+	align-items: flex-start;
+	margin-bottom: 20rpx;
 }
 
 .case-card-title {
-	font-size: 32rpx;
+	font-size: 34rpx;
 	font-weight: bold;
+	color: #333;
+	flex: 1;
+	margin-right: 20rpx;
+}
+
+.theme-dark .case-card-title {
+	color: #e2e8f0;
 }
 
 .case-card-body {
-	margin-bottom: 16rpx;
+	margin-bottom: 24rpx;
 }
 
 .case-card-number {
-	font-size: 24rpx;
+	display: block;
+	font-size: 26rpx;
 	color: #999;
-	margin-bottom: 10rpx;
+	margin-bottom: 16rpx;
+}
+
+.theme-dark .case-card-number {
+	color: #a0aec0;
 }
 
 .case-card-tags {
 	display: flex;
-	gap: 10rpx;
+	gap: 16rpx;
 }
 
 .case-card-footer {
-	font-size: 24rpx;
-	color: #999;
+	font-size: 26rpx;
+	color: #aaa;
+	border-top: 1px solid #f0f0f0;
+	padding-top: 20rpx;
+	margin-top: 20rpx;
+}
+
+.theme-dark .case-card-footer {
+	border-top-color: #4a5568;
+}
+
+.custom-fab {
+    position: fixed;
+    right: 40rpx;
+    bottom: 120rpx;
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    background-color: #007aff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+    z-index: 10;
 }
 
 /* 浅色主题（默认） */
@@ -930,22 +1000,6 @@ const selectHot = (item) => {
 .empty-text {
 	font-size: 16px;
 	color: #999;
-}
-
-
-.custom-fab {
-	position: fixed;
-	right: 40rpx;
-	bottom: 120rpx;
-	width: 100rpx;
-	height: 100rpx;
-	border-radius: 50%;
-	background-color: #007aff;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
-	z-index: 10;
 }
 
 
