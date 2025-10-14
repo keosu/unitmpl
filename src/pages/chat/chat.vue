@@ -1,11 +1,11 @@
 <template>
-	<view class="chat-container" :class="`theme-${themeStore.currentTheme}`">
+	<view class="chat-container-beautified" :class="`theme-${themeStore.currentTheme}`">
 		<!-- 聊天头部 -->
 		<view class="chat-header">
 			<view class="header-content">
 				<text class="chat-title">{{ t('chat.title') }}</text>
 				<view class="header-actions">
-					<text class="action-btn" @click="showSettings">⚙️</text>
+					<up-icon name="setting" size="22" color="#666"></up-icon>
 				</view>
 			</view>
 		</view>
@@ -14,45 +14,52 @@
 		<scroll-view 
 			class="message-list" 
 			scroll-y 
-			scroll-into-view="msg-{{messageList.length - 1}}"
+			:scroll-into-view="`msg-${messageList.length - 1}`"
 			enable-back-to-top
 		>
 			<view 
 				v-for="(message, index) in messageList" 
 				:key="index"
 				:id="`msg-${index}`"
-				class="message-item"
+				class="message-item-wrapper"
 				:class="message.type"
 			>
-				<view class="message-content">
-					<view v-if="message.type === 'received'" class="avatar">
-						<text class="avatar-text">🤖</text>
-					</view>
+				<up-avatar 
+					v-if="message.type === 'received'"
+					text="AI"
+					shape="circle"
+					bgColor="#007aff"
+				></up-avatar>
+
+				<view class="message-content-wrapper">
 					<view class="message-bubble" :class="message.type">
 						<up-markdown 
 							v-if="message.type === 'received'" 
 							:content="message.content" 
-							:theme="themeStore.currentTheme"
-							:previewImg="true"
 							class="message-markdown"
 						/>
 						<text v-else class="message-text">{{ message.content }}</text>
-						<text class="message-time">{{ formatTime(message.timestamp) }}</text>
 					</view>
-					<view v-if="message.type === 'sent'" class="avatar">
-						<text class="avatar-text">👤</text>
-					</view>
+					<text class="message-time">{{ formatTime(message.timestamp) }}</text>
 				</view>
+
+				<up-avatar 
+					v-if="message.type === 'sent'"
+					:text="userStore.user.username ? userStore.user.username.substring(0, 1) : '我'"
+					shape="circle"
+				></up-avatar>
 			</view>
 			
 			<!-- 正在输入提示 -->
-			<view v-if="isTyping" class="typing-indicator">
-				<view class="typing-content">
-					<view class="avatar">
-						<text class="avatar-text">🤖</text>
-					</view>
-					<view class="typing-bubble">
-						<text class="typing-text">正在输入...</text>
+			<view v-if="isTyping" class="message-item-wrapper received">
+				<up-avatar text="AI" shape="circle" bgColor="#007aff"></up-avatar>
+				<view class="message-content-wrapper">
+					<view class="message-bubble received typing-bubble">
+						<view class="typing-dots">
+							<view class="dot"></view>
+							<view class="dot"></view>
+							<view class="dot"></view>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -60,30 +67,23 @@
 
 		<!-- 输入区域 -->
 		<view class="input-area">
-			<view class="input-container">
-				<up-input 
-					v-model="inputText"
-					:placeholder="t('chat.input_placeholder')"
-					type="textarea"
-					:maxlength="500"
-					:autoHeight="true"
-					:showConfirmBar="false"
-					border="none"
-					customStyle="flex: 1; background: #f5f5f5; border-radius: 40rpx; padding: 20rpx 30rpx;"
-					@confirm="sendMessage"
-				></up-input>
-				<text class="char-count">{{ inputText.length }}/500</text>
-				<up-button 
-					:disabled="!canSend"
-					type="primary"
-					shape="circle"
-					size="default"
-					customStyle="width: 80rpx; height: 80rpx; margin-left: 20rpx;"
-					@click="sendMessage"
-				>
-					<up-icon name="arrow-right" color="white" size="36"></up-icon>
-				</up-button>
-			</view>
+			<up-input 
+				v-model="inputText"
+				:placeholder="t('chat.input_placeholder')"
+				border="none"
+				class="chat-input"
+				customStyle="padding: 24rpx 32rpx; background-color: #f5f5f5; border-radius: 40rpx;"
+				@confirm="sendMessage"
+			></up-input>
+			<up-button 
+				:disabled="!canSend"
+				type="primary"
+				shape="circle"
+				class="send-btn"
+				@click="sendMessage"
+			>
+				<up-icon name="arrow-upward" color="#fff" size="24"></up-icon>
+			</up-button>
 		</view>
 	</view>
 </template>
@@ -92,10 +92,12 @@
 import { ref, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/store/theme.js'
-import { chatAPI } from '@/api/chatService-v2.js'
+import { useUserStore } from '@/store/user.js'
+// import { chatAPI } from '@/api/chatService-v2.js'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
+const userStore = useUserStore()
 
 const inputText = ref('')
 const isTyping = ref(false)
@@ -109,114 +111,52 @@ const messageList = ref([
 
 const canSend = computed(() => inputText.value.trim().length > 0)
 
-const onInput = () => {
-	// 输入处理
-}
-
 const sendMessage = async () => {
 	if (!canSend.value) return
 	
 	const messageContent = inputText.value.trim()
 	
-	// 验证消息内容
-	if (!messageContent || messageContent.length === 0) {
-		uni.showToast({
-			title: '请输入消息内容',
-			icon: 'none'
-		})
-		return
-	}
-	
-	if (messageContent.length > 500) {
-		uni.showToast({
-			title: '消息内容过长，请控制在500字符以内',
-			icon: 'none'
-		})
-		return
-	}
-	
-	// 添加用户消息
 	const userMessage = {
 		type: 'sent',
 		content: messageContent,
 		timestamp: new Date(),
-		format: 'text'
 	}
 	
 	messageList.value.push(userMessage)
 	inputText.value = ''
 	
-	// 滚动到底部
 	await nextTick()
 	scrollToBottom()
 	
-	// 获取AI回复
 	await getAIReply(messageContent)
 }
 
 const getAIReply = async (userMessage) => {
 	isTyping.value = true
-	
-	try {
-		// 调用聊天服务API
-		const response = await chatAPI.sendMessage(userMessage, {
-			theme: themeStore.currentTheme
-		})
-		
-		isTyping.value = false
-		
-		if (response.success) {
-			const aiReply = {
-				type: 'received',
-				content: response.data.content,
-				timestamp: new Date(response.data.timestamp),
-				format: response.data.format || 'text'
-			}
-			
-			messageList.value.push(aiReply)
-			
-			// 滚动到底部
-			await nextTick()
-			scrollToBottom()
-		} else {
-			// 错误处理
-			const errorReply = {
-				type: 'received',
-				content: response.data?.content || '抱歉，服务暂时不可用。',
-				timestamp: new Date(),
-				format: 'text'
-			}
-			
-			messageList.value.push(errorReply)
-			await nextTick()
-			scrollToBottom()
-		}
-	} catch (error) {
-		console.error('获取AI回复失败:', error)
-		isTyping.value = false
-		
-		// 显示错误消息
-		const errorReply = {
+	scrollToBottom()
+
+	// Mock AI Reply
+	setTimeout(() => {
+		isTyping.value = false;
+		const aiReply = {
 			type: 'received',
-			content: '网络错误，请稍后再试。',
+			content: `这是对您消息 “**${userMessage}**” 的模拟回复。我可以处理Markdown格式，例如：\n\n- 列表项1\n- 列表项2\n\n` + '`' + 'javascript' + '`' + `\nconsole.log("Hello, World!");\n` + '`' + '`' + ` `,
 			timestamp: new Date(),
-			format: 'text'
-		}
-		
-		messageList.value.push(errorReply)
-		await nextTick()
-		scrollToBottom()
-	}
+		};
+		messageList.value.push(aiReply);
+		nextTick(() => {
+			scrollToBottom();
+		});
+	}, 1500);
 }
 
-// 滚动到底部的方法
 const scrollToBottom = () => {
-	setTimeout(() => {
+	nextTick(() => {
 		uni.pageScrollTo({
-			scrollTop: 99999,
-			duration: 300
-		})
-	}, 100)
+			scrollTop: 999999,
+			duration: 100
+		});
+	});
 }
 
 const formatTime = (timestamp) => {
@@ -226,90 +166,34 @@ const formatTime = (timestamp) => {
 	return `${hours}:${minutes}`
 }
 
-const showSettings = () => {
-	uni.showToast({
-		title: t('chat.settings'),
-		icon: 'none'
-	})
-}
 </script>
 
 <style scoped>
-/* 浅色主题（默认） */
-.chat-container {
-	height: 100%;
+.chat-container-beautified {
+	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background: #f8f9fa;
-	position: relative;
+	background-color: #f4f6f8;
+	box-sizing: border-box;
+	padding-bottom: calc(var(--window-bottom) + 120rpx);
+}
+
+.theme-dark .chat-container-beautified {
+	background-color: #1a1a1a;
 }
 
 .chat-header {
 	background: #fff;
-	border-bottom: 1px solid #eee;
-	padding: 15px 20px;
+	border-bottom: 1px solid #e9ecef;
+	padding: 24rpx 40rpx;
 	position: sticky;
 	top: 0;
 	z-index: 100;
-}
-
-/* 暗色主题 */
-.theme-dark .chat-container {
-	background: #1a1a1a;
 }
 
 .theme-dark .chat-header {
 	background: #2d3748;
 	border-bottom-color: #4a5568;
-}
-
-.theme-dark .chat-title {
-	color: #e2e8f0;
-}
-
-.theme-dark .message-bubble.received {
-	background: #2d3748;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.theme-dark .message-bubble.received .message-text {
-	color: #e2e8f0;
-}
-
-.theme-dark .typing-bubble {
-	background: #2d3748;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.theme-dark .typing-text {
-	color: #a0aec0;
-}
-
-.theme-dark .input-area {
-	background: #2d3748;
-	border-top-color: #4a5568;
-	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.theme-dark .input-wrapper {
-	background: #4a5568;
-}
-
-.theme-dark .input-text {
-	color: #e2e8f0;
-}
-
-.theme-dark .char-count {
-	color: #a0aec0;
-}
-
-.chat-header {
-	background: #fff;
-	border-bottom: 1px solid #eee;
-	padding: 15px 20px;
-	position: sticky;
-	top: 0;
-	z-index: 100;
 }
 
 .header-content {
@@ -319,246 +203,153 @@ const showSettings = () => {
 }
 
 .chat-title {
-	font-size: 18px;
-	font-weight: bold;
+	font-size: 36rpx;
+	font-weight: 600;
 	color: #333;
 }
 
-.header-actions {
-	display: flex;
-	gap: 15px;
-}
-
-.action-btn {
-	font-size: 20px;
-	opacity: 0.7;
+.theme-dark .chat-title {
+	color: #e2e8f0;
 }
 
 .message-list {
 	flex: 1;
-	padding: 20px;
-	padding-bottom: 100px;
+	padding: 40rpx 30rpx;
 	overflow-y: auto;
 	box-sizing: border-box;
 }
 
-.message-item {
-	margin-bottom: 20px;
-}
-
-.message-content {
+.message-item-wrapper {
 	display: flex;
-	align-items: flex-end;
-	gap: 10px;
+	margin-bottom: 24rpx;
+	align-items: flex-start;
+	gap: 20rpx;
 }
 
-.message-item.sent .message-content {
+.message-item-wrapper.sent {
 	flex-direction: row-reverse;
 }
 
-.avatar {
-	width: 40px;
-	height: 40px;
-	border-radius: 20px;
-	background: #e9ecef;
+.message-content-wrapper {
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
+	flex-direction: column;
+	align-items: flex-start;
+	max-width: 75%;
 }
 
-.avatar-text {
-	font-size: 18px;
+.message-item-wrapper.sent .message-content-wrapper {
+	align-items: flex-end;
 }
 
 .message-bubble {
-	max-width: 70%;
-	padding: 12px 16px;
-	border-radius: 18px;
-	position: relative;
+	padding: 24rpx 32rpx;
+	border-radius: 36rpx;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-}
-
-/* Markdown内容样式优化 */
-.message-bubble :deep(.up-markdown) {
-	padding: 0;
-	font-size: 32rpx;
-}
-
-.message-bubble :deep(.up-markdown h1),
-.message-bubble :deep(.up-markdown h2),
-.message-bubble :deep(.up-markdown h3) {
-	margin: 16rpx 0 12rpx 0;
-	font-size: 36rpx;
-}
-
-.message-bubble :deep(.up-markdown h4),
-.message-bubble :deep(.up-markdown h5),
-.message-bubble :deep(.up-markdown h6) {
-	margin: 12rpx 0 8rpx 0;
-	font-size: 32rpx;
-}
-
-.message-bubble :deep(.up-markdown p) {
-	margin: 8rpx 0;
-	font-size: 32rpx;
-	line-height: 1.5;
-}
-
-.message-bubble :deep(.up-markdown pre) {
-	margin: 12rpx 0;
-	max-width: 100%;
-	overflow-x: auto;
-	font-size: 26rpx;
-	border-radius: 12rpx;
-}
-
-.message-bubble :deep(.up-markdown table) {
-	max-width: 100%;
-	overflow-x: auto;
-	font-size: 26rpx;
-}
-
-.message-bubble :deep(.up-markdown ul),
-.message-bubble :deep(.up-markdown ol) {
-	margin: 8rpx 0;
-	padding-left: 32rpx;
-}
-
-.message-bubble :deep(.up-markdown li) {
-	margin: 4rpx 0;
-	font-size: 32rpx;
-}
-
-.message-bubble :deep(.up-markdown blockquote) {
-	margin: 8rpx 0;
-	padding: 8rpx 16rpx;
-	border-radius: 8rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
 }
 
 .message-bubble.received {
-	background: #fff;
-	border-bottom-left-radius: 6px;
+	background-color: #fff;
+	border-bottom-left-radius: 8rpx;
+}
+
+.theme-dark .message-bubble.received {
+	background-color: #2d3748;
 }
 
 .message-bubble.sent {
-	background: #007aff;
-	border-bottom-right-radius: 6px;
+	background-color: #007aff;
+	color: #fff;
+	border-bottom-right-radius: 8rpx;
 }
 
 .message-text {
-	display: block;
-	font-size: 16px;
-	line-height: 1.4;
-	word-wrap: break-word;
-}
-
-.message-bubble.received .message-text {
-	color: #333;
+	font-size: 30rpx;
+	line-height: 1.6;
 }
 
 .message-bubble.sent .message-text {
 	color: #fff;
 }
 
+.message-markdown {
+	font-size: 30rpx;
+	line-height: 1.6;
+}
+
 .message-time {
-	display: block;
-	font-size: 12px;
-	margin-top: 5px;
-	opacity: 0.7;
+	font-size: 24rpx;
+	color: #aaa;
+	margin-top: 12rpx;
+	padding: 0 10rpx;
 }
 
-.typing-indicator {
-	margin-bottom: 20px;
-}
-
-.typing-content {
-	display: flex;
-	align-items: flex-end;
-	gap: 10px;
-}
-
-.typing-bubble {
-	background: #fff;
-	padding: 12px 16px;
-	border-radius: 18px;
-	border-bottom-left-radius: 6px;
-}
-
-.typing-text {
-	font-size: 14px;
-	color: #999;
+.theme-dark .message-time {
+	color: #666;
 }
 
 .input-area {
-	position: absolute;
-	bottom: 5px;
-	left: 0;
-	right: 0;
-	background: #fff;
-	border-top: 1px solid #eee;
-	padding: 15px 20px;
-	padding-bottom: 15px;
-	z-index: 100;
-	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-	border-radius: 15px 15px 0 0;
-}
-
-.input-container {
 	display: flex;
-	align-items: flex-end;
-	gap: 10px;
+	align-items: center;
+	gap: 20rpx;
+	padding: 20rpx 30rpx;
+	background-color: #fff;
+	border-top: 1px solid #e9ecef;
 }
 
-.input-wrapper {
+.theme-dark .input-area {
+	background-color: #2d3748;
+	border-top-color: #4a5568;
+}
+
+.chat-input {
 	flex: 1;
-	background: #f5f5f5;
-	border-radius: 20px;
-	padding: 10px 15px;
-	position: relative;
 }
 
-.input-text {
-	width: 100%;
-	min-height: 20px;
-	max-height: 100px;
-	border: none;
-	background: transparent;
-	font-size: 16px;
-	line-height: 1.4;
-	resize: none;
+.theme-dark .chat-input {
+	--up-input-color: #e2e8f0;
 }
 
-.char-count {
-	font-size: 12px;
-	color: #999;
-	position: absolute;
-	right: 15px;
-	bottom: 5px;
+.theme-dark .chat-input ::v-deep(.u-input__content) {
+	background-color: #4a5568 !important;
 }
 
 .send-btn {
-	width: 40px;
-	height: 40px;
-	border-radius: 20px;
-	background: #ddd;
+	width: 88rpx;
+	height: 88rpx;
+	flex-shrink: 0;
+}
+
+.typing-bubble {
+	padding: 20rpx 30rpx;
+}
+
+.typing-dots {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	gap: 8rpx;
 }
 
-.send-btn.active {
-	background: #007aff;
+.dot {
+	width: 12rpx;
+	height: 12rpx;
+	border-radius: 50%;
+	background-color: #aaa;
+	animation: typing-blink 1.4s infinite both;
 }
 
-.send-icon {
-	font-size: 18px;
+.dot:nth-child(2) {
+	animation-delay: 0.2s;
 }
 
-.send-btn.active .send-icon {
-	color: #fff;
+.dot:nth-child(3) {
+	animation-delay: 0.4s;
 }
 
-
+@keyframes typing-blink {
+	0% { opacity: 0.2; }
+	20% { opacity: 1; }
+	100% { opacity: 0.2; }
+}
 </style>
